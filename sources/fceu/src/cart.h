@@ -1,24 +1,24 @@
 typedef struct {
-        /* Set by mapper/board code: */
-        void (*Power)(void);
-        void (*Reset)(void);
-        void (*Close)(void);
-        uint8 *SaveGame[4];     /* Pointers to memory to save/load. */
-        uint32 SaveGameLen[4];  /* How much memory to save/load. */
+  /* Set by mapper/board code: */
+  void (*Power)(void);
+  void (*Reset)(void);
+  void (*Close)(void);
+  uint8 *SaveGame[4];     /* Pointers to memory to save/load. */
+  uint32 SaveGameLen[4];  /* How much memory to save/load. */
 
-        /* Set by iNES/UNIF loading code. */
-	int mirror;		/* As set in the header or chunk.
-				   iNES/UNIF specific.  Intended
-				   to help support games like "Karnov"
-				   that are not really MMC3 but are
-				   set to mapper 4.
-				*/
-        int battery;            /* Presence of an actual battery. */
-	uint8 MD5[16];
-        uint32 CRC32;           /* Should be set by the iNES/UNIF loading
-                                   code, used by mapper/board code, maybe
-                                   other code in the future.
-                                */
+  /* Set by iNES/UNIF loading code. */
+  int mirror;    /* As set in the header or chunk.
+           iNES/UNIF specific.  Intended
+           to help support games like "Karnov"
+           that are not really MMC3 but are
+           set to mapper 4.
+        */
+  int battery;      /* Presence of an actual battery. */
+  uint8 MD5[16];
+  uint32 CRC32;     /* Should be set by the iNES/UNIF loading
+           code, used by mapper/board code, maybe
+           other code in the future.
+        */
 } CartInfo;
 
 void FCEU_SaveGameSave(CartInfo *LocalHWInfo);
@@ -72,7 +72,7 @@ void FASTAPASS(2) setchr8r(int r, unsigned int V);
 void FASTAPASS(2) setchr1(unsigned int A, unsigned int V);
 void FASTAPASS(2) setchr2(unsigned int A, unsigned int V);
 void FASTAPASS(2) setchr4(unsigned int A, unsigned int V);
-void FASTAPASS(1) setchr8(unsigned int V);
+void FASTAPASS(2) setchr8(unsigned int V);
 
 void FASTAPASS(2) setvram4(uint32 A, uint8 *p);
 void FASTAPASS(1) setvram8(uint8 *p);

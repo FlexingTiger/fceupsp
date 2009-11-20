@@ -17,24 +17,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-
+/*
 #include "mapinc.h"
-
-#define mCount mapbyte1[0]
 
 static DECLFW(Mapper60_write)
 {
-        VROM_BANK8(mCount);
-        ROM_BANK16(0x8000,mCount);
-        ROM_BANK16(0xc000,mCount);
-        mCount++;
-        mCount&=0x03;
+  if(A&0x80) {
+         ROM_BANK16(0x8000,(A&0x70)>>4);
+         ROM_BANK16(0xC000,(A&0x70)>>4);
+  }
+  else
+         ROM_BANK32((A&0x70)>>5);
+  VROM_BANK8(A&7);
+  MIRROR_SET((A&8)>>3);
 }
 
 void Mapper60_init(void)
 {
-    mCount=0;
-    SetWriteHandler(0x8000,0xFFFF,Mapper60_write);
+        ROM_BANK32(0);
+        SetWriteHandler(0x8000,0xffff, Mapper60_write);
 }
+*/
 

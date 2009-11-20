@@ -16,29 +16,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #include "mapinc.h"
+
+static uint64 count = 0, kogame;
 
 static void Fixerit(void)
 {
  switch(mapbyte2[0]&3)
  {
   case 0:vnapage[0]=vnapage[2]=CHRptr[0]+(((mapbyte1[0]|128)&CHRmask1[0])<<10);
-	 vnapage[1]=vnapage[3]=CHRptr[0]+(((mapbyte1[1]|128)&CHRmask1[0])<<10);
-	 break;
+         vnapage[1]=vnapage[3]=CHRptr[0]+(((mapbyte1[1]|128)&CHRmask1[0])<<10);
+         break;
   case 1:vnapage[0]=vnapage[1]=CHRptr[0]+(((mapbyte1[0]|128)&CHRmask1[0])<<10);
          vnapage[2]=vnapage[3]=CHRptr[0]+(((mapbyte1[1]|128)&CHRmask1[0])<<10);
          break;
   case 2:vnapage[0]=vnapage[1]=vnapage[2]=vnapage[3]=CHRptr[0]+(((mapbyte1[0]|128)&CHRmask1[0])<<10);
-	 break;
+         break;
   case 3:vnapage[0]=vnapage[1]=vnapage[2]=vnapage[3]=CHRptr[0]+(((mapbyte1[1]|128)&CHRmask1[0])<<10);
-	 break;
+         break;
  }
+}
+
+DECLFR(Mapper68_read)
+{
+    if(!(kogame&8))
+    {
+      count++;
+      if(count==1784)
+        ROM_BANK16(0x8000,kogame^8); 
+    }
+//    FCEU_printf("%lld %d\n",timestamp, count);
+    return CartBR(A);
+}
+
+DECLFW(Mapper68_writelo)
+{
+    if(!V)
+    { 
+//      FCEU_printf("%lld %d\n",timestamp, count);
+      count = 0;//timestampbase;
+      ROM_BANK16(0x8000,kogame);
+    }
 }
 
 DECLFW(Mapper68_write)
 {
+// FCEU_printf("%04x,%04x\n",A,V);
  A&=0xF000;
 
  if(A>=0x8000 && A<=0xB000)
@@ -49,12 +73,12 @@ DECLFW(Mapper68_write)
  {
   case 0xc000:mapbyte1[0]=V;
               if(VROM_size && mapbyte2[0]&0x10)
-	       Fixerit();
+               Fixerit();
               break;
 
   case 0xd000:mapbyte1[1]=V;
-	      if(VROM_size && mapbyte2[0]&0x10)
-	       Fixerit();
+              if(VROM_size && mapbyte2[0]&0x10)
+               Fixerit();
               break;
 
   case 0xe000: mapbyte2[0]=V;
@@ -69,12 +93,13 @@ DECLFW(Mapper68_write)
                 }
                }
                else if(VROM_size)
-	       {
-	        Fixerit();
-	        PPUNTARAM=0;
-	       }
+               {
+                Fixerit();
+                PPUNTARAM=0;
+               }
                break;
-  case 0xf000: ROM_BANK16(0x8000,V);break;
+  case 0xf000: kogame=V;
+               ROM_BANK16(0x8000,V); break;
  }
 }
 
@@ -92,13 +117,16 @@ static void Mapper68_StateRestore(int version)
               }
               else if(VROM_size)
               {
-		Fixerit();
+                Fixerit();
                 PPUNTARAM=0;
               }
 }
 
 void Mapper68_init(void)
 {
+ SetReadHandler(0x8000,0xbfff,Mapper68_read);
  SetWriteHandler(0x8000,0xffff,Mapper68_write);
+ SetWriteHandler(0x6000,0x6000,Mapper68_writelo);
  MapStateRestore=Mapper68_StateRestore;
 }
+ */

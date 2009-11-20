@@ -79,6 +79,11 @@ void RedoMenuGI(FCEUGI *gi)
  x = 0;
  while(simpled[x])
  {
+  #ifndef FCEUDEF_DEBUGGER
+  if(simpled[x] == 203)
+   EnableMenuItem(fceumenu,simpled[x],MF_BYCOMMAND | MF_GRAYED);
+  else
+  #endif
   EnableMenuItem(fceumenu,simpled[x],MF_BYCOMMAND | (gi?MF_ENABLED:MF_GRAYED));
   x++;
  }
@@ -119,7 +124,7 @@ void UpdateRMenu(HMENU menu, char **strs, int mitem, int baseid)
  for(x=0;x<10;x++)
   RemoveMenu(menu,baseid+x,MF_BYCOMMAND);
  for(x=9;x>=0;x--)
- {  
+ {
   char tmp[128+5];
   if(!strs[x]) continue;
 
@@ -202,7 +207,7 @@ void HideMenu(int h)
 {
   if(h)
   {
-   SetMenu(hAppWnd,0);   
+   SetMenu(hAppWnd,0);
   }
   else
   {
@@ -223,7 +228,7 @@ void HideFWindow(int h)
    WindowYC=bo.top;
 
    SetMenu(hAppWnd,0);
-   desa=WS_POPUP|WS_CLIPSIBLINGS;  
+   desa=WS_POPUP|WS_CLIPSIBLINGS;
  }
  else
  {
@@ -232,13 +237,13 @@ void HideFWindow(int h)
    /* Stupid DirectDraw bug(I think?) requires this.  Need to investigate it. */
    SetWindowPos(hAppWnd,HWND_NOTOPMOST,0,0,0,0,SWP_FRAMECHANGED|SWP_NOACTIVATE|SWP_NOCOPYBITS|SWP_NOMOVE|SWP_NOREPOSITION|SWP_NOSIZE);
  }
- 
+
  SetWindowLong(hAppWnd,GWL_STYLE,desa|(GetWindowLong(hAppWnd,GWL_STYLE)&WS_VISIBLE));
  SetWindowPos(hAppWnd,0,0,0,0,0,SWP_FRAMECHANGED|SWP_NOACTIVATE|SWP_NOCOPYBITS|SWP_NOMOVE|SWP_NOREPOSITION|SWP_NOSIZE|SWP_NOZORDER);
 }
 
 void ToggleHideMenu(void)
-{ 
+{
  if(!fullscreen)
  {
   tog^=1;
@@ -419,7 +424,7 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                   DragQueryFile((HANDLE)wParam,0,ftmp,len);
                   ALoad(ftmp);
                   free(ftmp);
-                 }                 
+                 }
                 }
                 break;
     case WM_COMMAND:
@@ -460,19 +465,17 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 
                   case 200:FCEUI_ResetNES();break;
                   case 201:FCEUI_PowerNES();break;
-		  case 203:BeginDSeq(hWnd);break;
+
+                  #ifdef FCEUDEF_DEBUGGER
+                  case 203:BeginDSeq(hWnd);break;
+                  #endif
+
                   case 204:ConfigAddCheat(hWnd);break;
+                  case 205:DoPPUView();break;
                   case 100:StopSound();
-                           LoadNewGamey(hWnd, 0);
+                           LoadNewGamey(hWnd,0);
                            break;
-                  case 101:if(GI)
-                           {
-			    KillDebugger();
-                            FCEUI_CloseGame();                            
-                            GI=0;
-                            RedoMenuGI(GI);
-                           }
-                           break;
+                  case 101:DoFCEUExit(); break;
                   case 110:SaveStateAs();break;
                   case 111:LoadStateFrom();break;
 
@@ -480,7 +483,7 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                            {
                             MENUITEMINFO mi;
                             char *str;
-             
+
                             StopSound();
                             if(CreateSoundSave())
                              str="Stop Sound Logging";
@@ -489,7 +492,7 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                             memset(&mi,0,sizeof(mi));
                             mi.fMask=MIIM_DATA|MIIM_TYPE;
                             mi.cbSize=sizeof(mi);
-                            GetMenuItemInfo(fceumenu,120,0,&mi);                           
+                            GetMenuItemInfo(fceumenu,120,0,&mi);
                             mi.fMask=MIIM_DATA|MIIM_TYPE;
                             mi.cbSize=sizeof(mi);
                             mi.dwTypeData=str;
@@ -498,7 +501,6 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                            }
                            break;
                   case 130:DoFCEUExit();break;
-
                   case 400:StopSound();ShowAboutBox();break;
                   case 401:MakeLogWindow();break;
                  }
@@ -514,12 +516,16 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                {
                 if(GI && InputType[2]==SIFC_FKB && cidisabled)
                  break;
+                if(GI && InputType[2]==SIFC_SUBORKB && cidisabled)
+                 break;
                 if(lParam == VK_RETURN || fullscreen || tog) break;
                }
                goto proco;
     case WM_SYSKEYDOWN:
                if(GI && InputType[2]==SIFC_FKB && cidisabled)
                 break; /* Hopefully this won't break DInput... */
+               if(GI && InputType[2]==SIFC_SUBORKB && cidisabled)
+                break;
 
                 if(fullscreen || tog)
                 {
@@ -535,7 +541,7 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 }
 
                 if(wParam == VK_RETURN)
-		{
+                {
                  if(!(lParam&(1<<30)))
                  {
                   UpdateMenu();
@@ -545,29 +551,40 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                   changerecursive=0;
                  }
                  break;
-		}
+                }
                 goto proco;
 
     case WM_KEYDOWN:
               if(GI)
-	      {
-	       /* Only disable command keys if a game is loaded(and the other
-		  conditions are right, of course). */
-               if(InputType[2]==SIFC_FKB)
-	       {
-		if(wParam==VK_SCROLL)
-		{
- 		 cidisabled^=1;
-		 FCEUI_DispMessage("Family Keyboard %sabled.",cidisabled?"en":"dis");
-		}
-		if(cidisabled)
-                 break; /* Hopefully this won't break DInput... */
-	       }
-	      }
-               if(!(lParam&0x40000000))
+              {
+               /* Only disable command keys if a game is loaded(and the other
+                  conditions are right, of course). */
+                if(InputType[2]==SIFC_FKB)
+                    {
+                        if(wParam==VK_SCROLL)
+                           {
+                              cidisabled^=1;
+                             FCEUI_DispMessage("Family Keyboard %sabled.",cidisabled?"en":"dis");
+                      }
+                             if(cidisabled)
+                    break; /* Hopefully this won't break DInput... */
+                    }
+                if(InputType[2]==SIFC_SUBORKB)
+                    {
+                        if(wParam==VK_SCROLL)
+                           {
+                              cidisabled^=1;
+                             FCEUI_DispMessage("Subor Keyboard %sabled.",cidisabled?"en":"dis");
+                      }
+                             if(cidisabled)
+                    break; /* Hopefully this won't break DInput... */
+                    }
+                  }
+              if(!(lParam&0x40000000))
                 switch( wParam )
                 {
                   case VK_F11:FCEUI_PowerNES();break;
+                  case VK_ESCAPE:
                   case VK_F12:DoFCEUExit();break;
                   case VK_F2:userpause^=1;break;
                   case VK_F3:ToggleHideMenu();break;
@@ -576,7 +593,7 @@ LRESULT FAR PASCAL AppWndProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
     case WM_CLOSE:
     case WM_DESTROY:
     case WM_QUIT:DoFCEUExit();break;
-    case WM_ACTIVATEAPP:       
+    case WM_ACTIVATEAPP:
        if((BOOL)wParam)
        {
         nofocus=0;
@@ -654,7 +671,7 @@ void FixWXY(int pref)
     if(!y) y=1;
 
     winsizemulx = x;
-    winsizemuly = y;    
+    winsizemuly = y;
    }
 
    if(winsizemulx > 100) winsizemulx = 100;
@@ -663,8 +680,8 @@ void FixWXY(int pref)
 
 void UpdateFCEUWindow(void)
 {
-  int w,h;
-  RECT wrect;
+//  int w,h;
+//  RECT wrect;
 
   if(vchanged && !fullscreen && !changerecursive && !nofocus)
   {
@@ -673,7 +690,9 @@ void UpdateFCEUWindow(void)
   }
 
   BlockingCheck();
+  #ifdef FCEUDEF_DEBUGGER
   UpdateDebugger();
+  #endif
 
   if(!(eoptions&EO_BGRUN))
    while(nofocus)
@@ -688,7 +707,7 @@ void UpdateFCEUWindow(void)
   while(userpause)
   {
    Sleep(50);
-   BlockingCheck();   
+   BlockingCheck();
   }
  }
 }
@@ -737,7 +756,7 @@ int CreateMainWindow(void)
   hAppWnd = CreateWindowEx(0,"FCEULTRA","FCE Ultra",
                         WS_OVERLAPPEDWINDOW|WS_CLIPSIBLINGS,  /* Style */
                         CW_USEDEFAULT,CW_USEDEFAULT,256,240,  /* X,Y ; Width, Height */
-                        NULL,fceumenu,fceu_hInstance,NULL );  
+                        NULL,fceumenu,fceu_hInstance,NULL );
   DragAcceptFiles(hAppWnd, 1);
   SetMainWindowStuff();
   return 1;
@@ -768,7 +787,7 @@ int SetMainWindowStuff(void)
 
     tmp.right-=tmp.left;
     tmp.right+=WindowXC;
-   
+
 
     tmp.left=WindowXC;
     tmp.top=WindowYC;
@@ -793,7 +812,7 @@ int GetClientAbsRect(LPRECT lpRect)
 
   lpRect->top=point.y;
   lpRect->left=point.x;
-  
+
   if(ismaximized)
   {
    RECT al;
@@ -828,7 +847,7 @@ int LoadPaletteFile(void)
  ofn.lpstrInitialDir=0;
  if(GetOpenFileName(&ofn))
  {
-  if((fp=fopen(nameo,"rb")))
+  if((fp=FCEUD_UTF8fopen(nameo,"rb")))
   {
    fread(cpalette,1,192,fp);
    fclose(fp);
@@ -846,12 +865,12 @@ static BOOL CALLBACK PaletteConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 {
   DSMFix(uMsg);
   switch(uMsg) {
-   case WM_INITDIALOG:                
+   case WM_INITDIALOG:
                 if(ntsccol)
                  CheckDlgButton(hwndDlg,100,BST_CHECKED);
                 SendDlgItemMessage(hwndDlg,500,TBM_SETRANGE,1,MAKELONG(0,128));
                 SendDlgItemMessage(hwndDlg,501,TBM_SETRANGE,1,MAKELONG(0,128));
-		FCEUI_GetNTSCTH(&ntsctint,&ntschue);
+                FCEUI_GetNTSCTH(&ntsctint,&ntschue);
                 SendDlgItemMessage(hwndDlg,500,TBM_SETPOS,1,ntsctint);
                 SendDlgItemMessage(hwndDlg,501,TBM_SETPOS,1,ntschue);
                 EnableWindow(GetDlgItem(hwndDlg,201),(eoptions&EO_CPALETTE)?1:0);
@@ -859,7 +878,7 @@ static BOOL CALLBACK PaletteConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
    case WM_HSCROLL:
                 ntsctint=SendDlgItemMessage(hwndDlg,500,TBM_GETPOS,0,(LPARAM)(LPSTR)0);
                 ntschue=SendDlgItemMessage(hwndDlg,501,TBM_GETPOS,0,(LPARAM)(LPSTR)0);
-		FCEUI_SetNTSCTH(ntsccol,ntsctint,ntschue);
+                FCEUI_SetNTSCTH(ntsccol,ntsctint,ntschue);
                 break;
    case WM_CLOSE:
    case WM_QUIT: goto gornk;
@@ -901,7 +920,7 @@ static BOOL CALLBACK TimingConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPAR
  int x;
 
   switch(uMsg) {
-   case WM_INITDIALOG:                
+   case WM_INITDIALOG:
                 if(eoptions&EO_HIGHPRIO)
                  CheckDlgButton(hwndDlg,105,BST_CHECKED);
                 if(eoptions&EO_NOTHROTTLE)
@@ -950,14 +969,14 @@ void DoTimingConfigFix(void)
 
 static void ConfigTiming(void)
 {
-  DialogBox(fceu_hInstance,"TIMINGCONFIG",hAppWnd,TimingConCallB);  
+  DialogBox(fceu_hInstance,"TIMINGCONFIG",hAppWnd,TimingConCallB);
   DoTimingConfigFix();
 }
 
 static BOOL CALLBACK GUIConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch(uMsg) {
-   case WM_INITDIALOG:                
+   case WM_INITDIALOG:
                 if(eoptions&EO_FOAFTERSTART)
                  CheckDlgButton(hwndDlg,102,BST_CHECKED);
                 if(eoptions&EO_HIDEMENU)
@@ -999,7 +1018,7 @@ static BOOL CALLBACK GUIConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM 
 
 static void ConfigGUI(void)
 {
-  DialogBox(fceu_hInstance,"GUICONFIG",hAppWnd,GUIConCallB);  
+  DialogBox(fceu_hInstance,"GUICONFIG",hAppWnd,GUIConCallB);
 }
 
 
@@ -1012,10 +1031,10 @@ static int BrowseForFolder(HWND hParent, char *htext, char *buf)
  buf[0]=0;
 
  memset(&bi,0,sizeof(bi));
-                
+
  bi.hwndOwner=hParent;
  bi.lpszTitle=htext;
- bi.ulFlags=BIF_RETURNONLYFSDIRS; 
+ bi.ulFlags=BIF_RETURNONLYFSDIRS;
 
  if(FAILED(CoInitialize(0)))
   return(0);
@@ -1046,7 +1065,7 @@ static BOOL CALLBACK DirConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM 
   int x;
 
   switch(uMsg){
-   case WM_INITDIALOG:                
+   case WM_INITDIALOG:
                 for(x=0;x<6;x++)
                  SetDlgItemText(hwndDlg,100+x,DOvers[x]);
                 if(eoptions&EO_SNAPNAME)

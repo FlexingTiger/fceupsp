@@ -69,32 +69,34 @@ void FCEUI_SetInput(int port, int type, void *ptr, int attrib);
 void FCEUI_SetInputFC(int type, void *ptr, int attrib);
 void FCEUI_DisableFourScore(int s);
 
-#define SI_NONE    	0
-#define SI_GAMEPAD 	1
-#define SI_ZAPPER  	2
-#define SI_POWERPADA	3
-#define SI_POWERPADB	4
-#define SI_ARKANOID 	5
+#define SI_NONE      0
+#define SI_GAMEPAD   1
+#define SI_ZAPPER    2
+#define SI_POWERPADA  3
+#define SI_POWERPADB  4
+#define SI_ARKANOID   5
+#define SI_MOUSE   6
 
-#define SIFC_NONE	0
-#define SIFC_ARKANOID	1
-#define SIFC_SHADOW	2
+#define SIFC_NONE      0
+#define SIFC_ARKANOID  1
+#define SIFC_SHADOW      2
 #define SIFC_4PLAYER    3
-#define SIFC_FKB	4
-#define SIFC_HYPERSHOT	5
-#define SIFC_MAHJONG	6
-#define SIFC_QUIZKING	7
-#define SIFC_FTRAINERA	8
-#define SIFC_FTRAINERB	9
-#define SIFC_OEKAKIDS	10
-#define SIFC_BWORLD	11
-#define SIFC_TOPRIDER	12
+#define SIFC_FKB      4
+#define SIFC_SUBORKB    5
+#define SIFC_HYPERSHOT  6
+#define SIFC_MAHJONG  7
+#define SIFC_QUIZKING  8
+#define SIFC_FTRAINERA  9
+#define SIFC_FTRAINERB  10
+#define SIFC_OEKAKIDS  11
+#define SIFC_BWORLD      12
+#define SIFC_TOPRIDER  13
 
-#define SIS_NONE	0
-#define SIS_DATACH	1
-#define SIS_NWC		2
-#define SIS_VSUNISYSTEM	3
-#define SIS_NSF		4
+#define SIS_NONE  0
+#define SIS_DATACH  1
+#define SIS_NWC    2
+#define SIS_VSUNISYSTEM  3
+#define SIS_NSF    4
 
 /* New interface functions */
 
@@ -199,7 +201,7 @@ void FCEUI_CheatSearchSetCurrentAsOriginal(void);
 #define FCEUIOD_NV      2
 #define FCEUIOD_CHEATS  3
 #define FCEUIOD_MISC    4
-#define FCEUIOD_MOVIE	5
+#define FCEUIOD_MOVIE  5
 
 #define FCEUIOD__COUNT  6
 
@@ -215,7 +217,7 @@ void FCEUI_GetIVectors(uint16 *reset, uint16 *irq, uint16 *nmi);
 
 uint32 FCEUI_CRC32(uint32 crc, uint8 *buf, uint32 len);
 
-void FCEUI_ToggleTileView(void);
+//void FCEUI_ToggleTileView(void);
 void FCEUI_SetLowPass(int q);
 
 void FCEUI_NSFSetVis(int mode);

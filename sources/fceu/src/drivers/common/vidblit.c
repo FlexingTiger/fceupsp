@@ -35,26 +35,26 @@ static uint32 *specbuf32bpp = NULL;      // Buffer to hold output
 static int backBpp, backshiftr[3], backshiftl[3];
 //static uint32 backmask[3];
 
-static uint8 *specbuf8bpp = NULL;	// For 2xscale, 3xscale.
+static uint8 *specbuf8bpp = NULL;        // For 2xscale, 3xscale.
 
 
 static int silt;
 
-static int Bpp;	// BYTES per pixel
+static int Bpp;        // BYTES per pixel
 static int highefx;
 
-#define BLUR_RED	20
-#define BLUR_GREEN	20
-#define BLUR_BLUE	10
+#define BLUR_RED        20
+#define BLUR_GREEN        20
+#define BLUR_BLUE        10
 
-#define FVB_SCANLINES	1
+#define FVB_SCANLINES        1
 
 /* The blur effect is only available for bpp>=16.  It could be easily modified
    to look like what happens on the real NES and TV, but lack of decent
    synchronization to the vertical retrace period makes it look rather
    blah.
 */
-#define FVB_BLUR	2
+#define FVB_BLUR        2
 
 static void CalculateShift(uint32 *CBM, int *cshiftr, int *cshiftl)
 {
@@ -88,8 +88,8 @@ int InitBlitToHigh(int b, uint32 rmask, uint32 gmask, uint32 bmask, int efx, int
 
  }
  else if(specfilt == 1 || specfilt == 3) // hq2x and hq3x
- { 
-  if(b == 1) 
+ {
+  if(b == 1)
    return(0);
 
   if(b == 2 || b == 3)          // 8->16->(hq2x)->32-> 24 or 16.  YARGH.
@@ -115,7 +115,7 @@ int InitBlitToHigh(int b, uint32 rmask, uint32 gmask, uint32 bmask, int efx, int
     //backmask[2] = (bmask>>backshiftl[2]) << (backshiftr[2]);
 
     //int x;
-    //for(x=0;x<3;x++) 
+    //for(x=0;x<3;x++)
     // backshiftr[x] -= backshiftl[x];
     // End iffy code
    }
@@ -201,7 +201,7 @@ void KillBlitToHigh(void)
 
 
 void SetPaletteBlitToHigh(uint8 *src)
-{ 
+{
              int cshiftr[3];
              int cshiftl[3];
              int x,y;
@@ -211,32 +211,32 @@ void SetPaletteBlitToHigh(uint8 *src)
  switch(Bpp)
  {
     case 2:
-	     if(highefx&FVB_BLUR)
-	     {
-              for(x=0;x<256;x++)   
+             if(highefx&FVB_BLUR)
+             {
+              for(x=0;x<256;x++)
               {
                uint32 r,g,b;
-	       for(y=0;y<256;y++)
+               for(y=0;y<256;y++)
                {
                 r=src[x<<2]*(100-BLUR_RED);
                 g=src[(x<<2)+1]*(100-BLUR_GREEN);
                 b=src[(x<<2)+2]*(100-BLUR_BLUE);
-  
+
                 r+=src[y<<2]*BLUR_RED;
                 g+=src[(y<<2)+1]*BLUR_GREEN;
                 b+=src[(y<<2)+2]*BLUR_BLUE;
                 r/=100;
-		g/=100; 
-		b/=100;
+                g/=100;
+                b/=100;
 
-		if(r>255) r=255; if(g>255) g=255; if(b>255) b=255;
+                if(r>255) r=255; if(g>255) g=255; if(b>255) b=255;
                 palettetranslate[x|(y<<8)]=((r>>cshiftr[0])<<cshiftl[0])|
-					   ((g>>cshiftr[1])<<cshiftl[1])|
-					   ((b>>cshiftr[2])<<cshiftl[2]);
-	       }
+                                           ((g>>cshiftr[1])<<cshiftl[1])|
+                                           ((b>>cshiftr[2])<<cshiftl[2]);
+               }
               }
-	     }
-	     else
+             }
+             else
              for(x=0;x<65536;x++)
              {
               uint16 lower,upper;
@@ -250,23 +250,23 @@ void SetPaletteBlitToHigh(uint8 *src)
 
               palettetranslate[x]=lower|(upper<<16);
              }
-	    break;
+            break;
     case 3:
     case 4:
             for(x=0;x<256;x++)
             {
-	     uint32 r,g,b;
+             uint32 r,g,b;
 
-	     if(!(highefx&FVB_BLUR))
-	     {
-	      r=src[x<<2];
+             if(!(highefx&FVB_BLUR))
+             {
+              r=src[x<<2];
               g=src[(x<<2)+1];
               b=src[(x<<2)+2];
               palettetranslate[x]=(r<<cshiftl[0])|(g<<cshiftl[1])|(b<<cshiftl[2]);
-	     }
-	     else	
-	     for(y=0;y<256;y++)
-	     {
+             }
+             else
+             for(y=0;y<256;y++)
+             {
                 r=src[x<<2]*(100-BLUR_RED);
                 g=src[(x<<2)+1]*(100-BLUR_GREEN);
                 b=src[(x<<2)+2]*(100-BLUR_BLUE);
@@ -274,14 +274,14 @@ void SetPaletteBlitToHigh(uint8 *src)
                 r+=src[y<<2]*BLUR_RED;
                 g+=src[(y<<2)+1]*BLUR_GREEN;
                 b+=src[(y<<2)+2]*BLUR_BLUE;
-               
+
                 r/=100;
                 g/=100;
-                b/=100;                  
+                b/=100;
                 if(r>255) r=255; if(g>255) g=255; if(b>255) b=255;
 
                 palettetranslate[x|(y<<8)]=(r<<cshiftl[0])|(g<<cshiftl[1])|(b<<cshiftl[2]);
-	     }
+             }
             }
             break;
  }
@@ -350,11 +350,11 @@ void Blit8To8(uint8 *src, uint8 *dest, int xr, int yr, int pitch, int xscale, in
 {
  int x,y;
  int pinc;
- 
+
  if(special==2)
  {
   if(xscale!=2 || yscale!=2) return;
-  
+
   scale(2,dest,pitch,src,256,1,xr,yr);
   return;
  }
@@ -364,7 +364,7 @@ void Blit8To8(uint8 *src, uint8 *dest, int xr, int yr, int pitch, int xscale, in
   if(xscale!=3 || yscale!=3) return;
   scale(3,dest,pitch,src,256,1,xr,yr);
   return;
- }     
+ }
 
  pinc=pitch-(xr*xscale);
  if(xscale!=1 || yscale!=1)
@@ -417,7 +417,7 @@ void Blit8To8(uint8 *src, uint8 *dest, int xr, int yr, int pitch, int xscale, in
     src+=xr;
    }
  }
- 
+
  }
  else
  {
@@ -429,12 +429,12 @@ void Blit8To8(uint8 *src, uint8 *dest, int xr, int yr, int pitch, int xscale, in
 
 /* Todo:  Make sure 24bpp code works right with big-endian cpus */
 
-void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch, 
-		 int xscale, int yscale)
+void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
+                 int xscale, int yscale)
 {
  int x,y;
  int pinc;
- uint8 *destbackup = NULL;	/* For hq2x */
+ uint8 *destbackup = NULL;        /* For hq2x */
  int pitchbackup = 0;
 
  //static int google=0;
@@ -442,7 +442,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
 
  if(specbuf8bpp)        // 2xscale/3xscale
  {
-  int mult; 
+  int mult;
   int base;
 
   if(silt == 2) mult = 2;
@@ -487,7 +487,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      }
      dest+=pinc;
     }
-    break; 
+    break;
   case 2:
    pinc=pitch-(xr<<1);
 
@@ -516,7 +516,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
   yscale=1;
  }
 
- if(highefx&FVB_BLUR)	// DONE
+ if(highefx&FVB_BLUR)        // DONE
  {
   if(xscale!=1 || yscale!=1 || (highefx&FVB_SCANLINES)) // DONE
   {
@@ -526,8 +526,8 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      pinc=pitch-((xr*xscale)<<2);
      for(y=yr;y;y--,src+=256-xr)
      {
-      int doo=yscale;   
-     
+      int doo=yscale;
+
       if(highefx&FVB_SCANLINES)
        doo-=yscale>>1;
       do
@@ -543,7 +543,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
          *(uint32 *)dest=palettetranslate[*src|(last<<8)];
          dest+=4;
         } while(--too);
-	last=*src;
+        last=*src;
        }
        //if(doo == 1 && google) dest-=4;
        src-=xr;
@@ -559,7 +559,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      for(y=yr;y;y--,src+=256-xr)
      {
       int doo=yscale;
- 
+
       if(highefx&FVB_SCANLINES)
        doo-=yscale>>1;
       do
@@ -569,19 +569,19 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
        {
         int too=xscale;
         do
-        {  
+        {
          *(uint32 *)dest=palettetranslate[*src|(last<<8)];
          dest+=3;
         } while(--too);
-	last=*src;
+        last=*src;
        }
        src-=xr;
        dest+=pinc;
-      } while(--doo); 
+      } while(--doo);
       src+=xr;
       if(highefx&FVB_SCANLINES)
        dest+=pitch*(yscale>>1);
-     }     
+     }
      break;
 
   case 2:
@@ -592,7 +592,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      int doo=yscale;
 
      if(highefx& FVB_SCANLINES)
-      doo-=yscale>>1;     
+      doo-=yscale>>1;
      do
      {
       uint8 last=0x00;
@@ -610,16 +610,16 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      dest+=pinc;
      } while(--doo);
      src+=xr;
-     if(highefx&FVB_SCANLINES) 
+     if(highefx&FVB_SCANLINES)
       dest+=pitch*(yscale>>1);
     }
-    break;   
-   }   
+    break;
+   }
   }
   else // No scaling, no scanlines, just blurring. - DONE
   switch(Bpp)
   {
-   case 4:   
+   case 4:
     pinc=pitch-(xr<<2);
     for(y=yr;y;y--,src+=256-xr)
     {
@@ -629,7 +629,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
       *(uint32 *)dest=palettetranslate[*src|(last<<8)];
       last=*src;
       dest+=4;
-      src++; 
+      src++;
      }
      dest+=pinc;
     }
@@ -647,7 +647,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
       *((uint8 *)dest+1)=tmp>>8;
       *((uint8 *)dest+2)=tmp>>16;
       dest+=3;
-      src++;   
+      src++;
      }
      dest+=pinc;
     }
@@ -669,7 +669,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
    break;
   }
  }
- else	// No blur effects.
+ else        // No blur effects.
  {
   if(xscale!=1 || yscale!=1 || (highefx&FVB_SCANLINES))
   {
@@ -680,7 +680,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
     for(y=yr;y;y--,src+=256-xr)
     {
      int doo=yscale;
-             
+
      if(highefx& FVB_SCANLINES)
       doo-=yscale>>1;
      do
@@ -690,7 +690,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
        int too=xscale;
        do
        {
-        *(uint32 *)dest=palettetranslate[*src]; 
+        *(uint32 *)dest=palettetranslate[*src];
         dest+=4;
        } while(--too);
       }
@@ -700,21 +700,21 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      src+=xr;
      if(highefx&FVB_SCANLINES)
       dest+=pitch*(yscale>>1);
-    }  
+    }
     break;
 
    case 3:
     pinc=pitch-((xr*xscale)*3);
     for(y=yr;y;y--,src+=256-xr)
-    {  
+    {
      int doo=yscale;
-      
+
      if(highefx& FVB_SCANLINES)
       doo-=yscale>>1;
      do
      {
       for(x=xr;x;x--,src++)
-      {    
+      {
        int too=xscale;
        do
        {
@@ -739,11 +739,11 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
 
   case 2:
     pinc=pitch-((xr*xscale)<<1);
-       
+
     for(y=yr;y;y--,src+=256-xr)
-    {   
+    {
      int doo=yscale;
-        
+
      if(highefx& FVB_SCANLINES)
       doo-=yscale>>1;
      do
@@ -763,7 +763,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
      src+=xr;
      if(highefx&FVB_SCANLINES)
       dest+=pitch*(yscale>>1);
-    }  
+    }
     break;
    }
   }
@@ -788,7 +788,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
     for(y=yr;y;y--,src+=256-xr)
     {
      for(x=xr;x;x--)
-     {     
+     {
       uint32 tmp=palettetranslate[(uint32)*src];
       *(uint8 *)dest=tmp;
       *((uint8 *)dest+1)=tmp>>8;
@@ -815,7 +815,7 @@ void Blit8ToHigh(uint8 *src, uint8 *dest, int xr, int yr, int pitch,
    break;
   }
  }
- 
+
  if(specbuf)
  {
   if(specbuf32bpp)

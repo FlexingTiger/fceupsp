@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*	Contains file I/O functions that write/read data    */
-/*	LSB first.				            */
+/*  Contains file I/O functions that write/read data    */
+/*  LSB first.              */
 
 
 #include <stdio.h>
@@ -31,7 +31,7 @@ void FlipByteOrder(uint8 *src, uint32 count)
  uint8 *start=src;
  uint8 *end=src+count-1;
 
- if((count&1) || !count)        return;         /* This shouldn't happen. */
+ if((count&1) || !count)  return;   /* This shouldn't happen. */
 
  while(count--)
  {
@@ -89,12 +89,12 @@ int read16le(char *d, FILE *fp)
 }
 
 void FCEU_en32lsb(uint8 *buf, uint32 morp)
-{ 
+{
  buf[0]=morp;
  buf[1]=morp>>8;
  buf[2]=morp>>16;
  buf[3]=morp>>24;
-} 
+}
 
 uint32 FCEU_de32lsb(uint8 *morp)
 {

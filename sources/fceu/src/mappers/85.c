@@ -33,31 +33,31 @@ static int dwave=0;
 void DoVRC7Sound(void)
 {
  int32 z,a;
- 
+
  if(FSettings.soundq>=1) return;
  z=((SOUNDTS<<16)/soundtsinc)>>4;
  a=z-dwave;
-        
+
  moocow(VRC7Sound, &Wave[dwave], a, 1);
-      
+
  dwave+=a;
 }
 
 void UpdateOPLNEO(int32 *Wave, int Count)
-{ 
+{
  moocow(VRC7Sound, Wave, Count, 4);
-}  
+}
 
-void UpdateOPL(int Count)  
+void UpdateOPL(int Count)
 {
  int32 z,a;
- 
+
   z=((SOUNDTS<<16)/soundtsinc)>>4;
  a=z-dwave;
-        
+
  if(VRC7Sound && a)
   moocow(VRC7Sound, &Wave[dwave], a, 1);
-         
+
  dwave=0;
 }
 
@@ -69,28 +69,28 @@ static INLINE void DaMirror(int V)
 
 DECLFW(Mapper85_write)
 {
-	A|=(A&8)<<1;
+        A|=(A&8)<<1;
 
-	if(A>=0xa000 && A<=0xDFFF)
-	{
-	// printf("$%04x, $%04x\n",X.PC,A);
-	 A&=0xF010;
-	 {
-	  int x=((A>>4)&1)|((A-0xA000)>>11);
- 	  mapbyte3[x]=V;
-	  setchr1(x<<10,V);
-	 }
-	}
-	else if(A==0x9030)
-	{
-	 if(FSettings.SndRate)
-	 {
-	  OPLL_writeReg(VRC7Sound, indox, V);
+        if(A>=0xa000 && A<=0xDFFF)
+        {
+        // printf("$%04x, $%04x\n",X.PC,A);
+         A&=0xF010;
+         {
+          int x=((A>>4)&1)|((A-0xA000)>>11);
+           mapbyte3[x]=V;
+          setchr1(x<<10,V);
+         }
+        }
+        else if(A==0x9030)
+        {
+         if(FSettings.SndRate)
+         {
+          OPLL_writeReg(VRC7Sound, indox, V);
           GameExpSound.Fill=UpdateOPL;
-	  GameExpSound.NeoFill=UpdateOPLNEO;
-	 }
-	}
-	else switch(A&0xF010)
+          GameExpSound.NeoFill=UpdateOPLNEO;
+         }
+        }
+        else switch(A&0xF010)
         {
          case 0x8000:mapbyte2[0]=V;setprg8(0x8000,V);break;
          case 0x8010:mapbyte2[1]=V;setprg8(0xa000,V);break;
@@ -98,17 +98,17 @@ DECLFW(Mapper85_write)
          case 0x9010:indox=V;break;
          case 0xe000:mapbyte2[3]=V;DaMirror(V);break;
          case 0xE010:IRQLatch=V;
-		     X6502_IRQEnd(FCEU_IQEXT);
+                     X6502_IRQEnd(FCEU_IQEXT);
                      break;
          case 0xF000:IRQa=V&2;
                      vrctemp=V&1;
                      if(V&2) {IRQCount=IRQLatch;}
-		     acount=0;
-		     X6502_IRQEnd(FCEU_IQEXT);
+                     acount=0;
+                     X6502_IRQEnd(FCEU_IQEXT);
                      break;
          case 0xf010:if(vrctemp) IRQa=1;
                      else IRQa=0;
-		     X6502_IRQEnd(FCEU_IQEXT);
+                     X6502_IRQEnd(FCEU_IQEXT);
                      break;
         }
 }
@@ -120,7 +120,7 @@ static void FP_FASTAPASS(1) KonamiIRQHook(int a)
   if(IRQa)
    {
     acount+=a*3;
-    
+
     if(acount>=ACBOO)
     {
      doagainbub:acount-=ACBOO;
@@ -169,7 +169,7 @@ static void VRC7SI(void)
 {
   GameExpSound.RChange=M85SC;
   GameExpSound.Kill=M85SKill;
- 
+
   VRC7Sound=OPLL_new(3579545, FSettings.SndRate?FSettings.SndRate:44100);
   OPLL_reset(VRC7Sound);
   OPLL_reset(VRC7Sound);

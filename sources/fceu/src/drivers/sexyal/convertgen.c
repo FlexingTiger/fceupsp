@@ -9,21 +9,22 @@ int bitsreal[]={8,8,16,16,32,32,32,32};
 
 void Fetch(int x,char *wt)
 {
- printf(" int32_t tmp%s=*src;\n",wt);
+ //printf(" int32_t tmp%s=*src;\n",wt);
+ printf("tmp%s=*src;\n",wt);
  printf(" src++;\n");
 }
 
 void BitConv(int src, int dest, char *wt)
 {
  if((src^dest)&1) /* signed/unsigned change. */
-  if(src&1)	/* Source unsigned, dest signed. */
+  if(src&1)        /* Source unsigned, dest signed. */
   {
    if(src==1) printf(" tmp%s-=128;\n",wt);
    else if(src==3) printf(" tmp%s-=32768;\n",wt);
    else if(src==5) printf(" tmp%s-=32768;\n",wt);
    else if(src==7) printf(" tmp%s-=(1<<23);\n",wt);
   }
-  else		/* Source signed, dest unsigned */
+  else                /* Source signed, dest unsigned */
   {
    if(src==0) printf(" tmp%s+=128;\n",wt);
    else if(src==2) printf(" tmp%s+=32768;\n",wt);
@@ -80,9 +81,14 @@ main()
        printf("if(destformat->byteorder == %d)\n{\n",destbo);
        //printf("if(srcformat->sampformat==%s && destformat->sameck[srcbits],check[destbits]);
        printf("while(frames--)\n{\n");
+
+       puts("int32_t tmp;");
+       if(srcchannels)
+        puts("int32_t tmp2;");
+
        Fetch(srcbits,"");
 
-       if(srcbo) 
+       if(srcbo)
        {
         if(bitsreal[srcbits]==16)
          puts("FLIP16(tmp);");
@@ -90,16 +96,16 @@ main()
          puts("FLIP32(tmp);");
        }
 
-       if(srcchannels) 
+       if(srcchannels)
        {
         Fetch(srcbits,"2");
-        if(srcbo) 
+        if(srcbo)
         {
          if(bitsreal[srcbits]==16)
           puts("FLIP16(tmp2);");
          else
           puts("FLIP32(tmp2);");
-        } 
+        }
        }
 
        BitConv(srcbits,destbits,"");
@@ -107,7 +113,7 @@ main()
        if(srcchannels) BitConv(srcbits,destbits,"2");
 
        if(destbo)
-       { 
+       {
         if(bitsreal[srcbits]==16)
          puts("FLIP16(tmp);");
         else
@@ -115,7 +121,7 @@ main()
         if(srcchannels && destchannels && destbo)
         {
          if(bitsreal[srcbits]==16)
-          puts("FLIP16(tmp2);");   
+          puts("FLIP16(tmp2);");
          else
           puts("FLIP32(tmp2);");
         }

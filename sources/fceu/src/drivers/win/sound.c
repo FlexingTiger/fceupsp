@@ -129,7 +129,7 @@ int32 GetMaxSound(void)
 
 static int RawWrite(void *data, uint32_t len)
 {
- uint32_t cw;
+// uint32_t cw;
 
  //printf("Pre: %d\n",SexyALI_DSound_RawCanWrite(device));
  //fflush(stdout);
@@ -145,7 +145,7 @@ static int RawWrite(void *data, uint32_t len)
   int32_t curlen;
 
   while(!(curlen=RawCanWrite()))
-  {   
+  {
    Sleep(1);
   }
 
@@ -209,7 +209,7 @@ int InitSound()
  wf.nSamplesPerSec = soundrate;
 
  ddrval=DirectSoundCreate(0,&ppDS,0);
- if (ddrval != DS_OK)
+ if(ddrval != DS_OK)
  {
   FCEUD_PrintError("DirectSound: Error creating DirectSound object.");
   return 0;
@@ -219,7 +219,7 @@ int InitSound()
  {
   trysecondary:
   ddrval=IDirectSound_SetCooperativeLevel(ppDS,hAppWnd,DSSCL_PRIORITY);
-  if (ddrval != DS_OK)
+  if(ddrval != DS_OK)
   {
    FCEUD_PrintError("DirectSound: Error setting cooperative level to DDSCL_PRIORITY.");
    TrashSound();
@@ -229,7 +229,7 @@ int InitSound()
  else
  {
   ddrval=IDirectSound_SetCooperativeLevel(ppDS,hAppWnd,DSSCL_WRITEPRIMARY);
-  if (ddrval != DS_OK)
+  if(ddrval != DS_OK)
   {
    FCEUD_PrintError("DirectSound: Error setting cooperative level to DDSCL_WRITEPRIMARY.  Forcing use of secondary sound buffer and trying again...");
    soundoptions|=SO_SECONDARY;
@@ -258,12 +258,12 @@ int InitSound()
   DSBufferDesc.dwFlags=DSBCAPS_PRIMARYBUFFER|DSBCAPS_GETCURRENTPOSITION2;
 
  ddrval=IDirectSound_CreateSoundBuffer(ppDS,&DSBufferDesc,&ppbuf,0);
- if (ddrval != DS_OK)
+ if(ddrval != DS_OK)
  {
   FCEUD_PrintError("DirectSound: Error creating primary buffer.");
   TrashSound();
   return 0;
- } 
+ }
 
  memset(&wfa,0x00,sizeof(wfa));
 
@@ -284,9 +284,9 @@ int InitSound()
  wf.wBitsPerSample=8<<bittage;
  wf.nBlockAlign = bittage+1;
  wf.nAvgBytesPerSec = wf.nSamplesPerSec * wf.nBlockAlign;
- 
+
  ddrval=IDirectSoundBuffer_SetFormat(ppbuf,&wf);
- if (ddrval != DS_OK)
+ if(ddrval != DS_OK)
  {
   FCEUD_PrintError("DirectSound: Error setting primary buffer format.");
   TrashSound();
@@ -297,15 +297,15 @@ int InitSound()
 
  if(soundoptions&SO_SECONDARY)
  {
-  memset(&DSBufferDesc,0x00,sizeof(DSBUFFERDESC));  
+  memset(&DSBufferDesc,0x00,sizeof(DSBUFFERDESC));
   DSBufferDesc.dwSize=sizeof(DSBufferDesc);
   DSBufferDesc.dwFlags=DSBCAPS_GETCURRENTPOSITION2;
   if(soundoptions&SO_GFOCUS)
    DSBufferDesc.dwFlags|=DSBCAPS_GLOBALFOCUS;
   DSBufferDesc.dwBufferBytes=65536;
-  DSBufferDesc.lpwfxFormat=&wfa;  
+  DSBufferDesc.lpwfxFormat=&wfa;
   ddrval=IDirectSound_CreateSoundBuffer(ppDS, &DSBufferDesc, &ppbufsec, 0);
-  if (ddrval != DS_OK)
+  if(ddrval != DS_OK)
   {
    FCEUD_PrintError("DirectSound: Error creating secondary buffer.");
    TrashSound();
@@ -327,7 +327,7 @@ int InitSound()
   memset(&dsbcaps,0,sizeof(dsbcaps));
   dsbcaps.dwSize=sizeof(dsbcaps);
   ddrval=IDirectSoundBuffer_GetCaps(ppbuf,&dsbcaps);
-  if (ddrval != DS_OK)
+  if(ddrval != DS_OK)
   {
    FCEUD_PrintError("DirectSound: Error getting buffer capabilities.");
    TrashSound();
@@ -426,9 +426,9 @@ BOOL CALLBACK SoundConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
                 switch(HIWORD(wParam))
                 {
                  case CBN_SELENDOK:
-			switch(LOWORD(wParam))
+                        switch(LOWORD(wParam))
                         {
-			 case 200:
+                         case 200:
                          {
                           int tmp;
                           tmp=SendDlgItemMessage(hwndDlg,200,CB_GETCURSEL,0,(LPARAM)(LPSTR)0);
@@ -442,7 +442,7 @@ BOOL CALLBACK SoundConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
                            soundrate=tmp;
                            if(soundrate<44100)
                            {
-			    soundquality=0;
+                            soundquality=0;
                             FCEUI_SetSoundQuality(0);
                             UpdateSD(hwndDlg);
                            }
@@ -454,26 +454,26 @@ BOOL CALLBACK SoundConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
                            }
                           }
                          }
-			 break;
+                         break;
 
-			case 129:
-			 soundquality=SendDlgItemMessage(hwndDlg,129,CB_GETCURSEL,0,(LPARAM)(LPSTR)0);
+                        case 129:
+                         soundquality=SendDlgItemMessage(hwndDlg,129,CB_GETCURSEL,0,(LPARAM)(LPSTR)0);
                          if(soundrate<44100) soundquality=0;
                          FCEUI_SetSoundQuality(soundquality);
                          UpdateSD(hwndDlg);
-			 break;
-			}
+                         break;
+                        }
                         break;
 
                  case BN_CLICKED:
                         switch(LOWORD(wParam))
                         {
-                         case 122:soundoptions^=SO_FORCE8BIT;   
+                         case 122:soundoptions^=SO_FORCE8BIT;
                                   if(soundo)
                                   {
                                    TrashSound();
                                    soundo=InitSound();
-                                   UpdateSD(hwndDlg);                                   
+                                   UpdateSD(hwndDlg);
                                   }
                                   break;
                          case 123:soundoptions^=SO_SECONDARY;
@@ -504,7 +504,7 @@ BOOL CALLBACK SoundConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
                 switch(wParam&0xFFFF)
                 {
                  case 1:
-                        gornk:                         
+                        gornk:
                         DestroyWindow(hwndDlg);
                         uug=0;
                         break;

@@ -26,14 +26,15 @@
 static int acount=0;
 static DECLFW(Mapper23_write)
 {
+    FCEU_printf("%04x:%02x\n",A,V);
  if((A&0xF000)==0x8000)
  {
   if(K4sel&2)
    ROM_BANK8(0xC000,V);
   else
    ROM_BANK8(0x8000,V);
-  } 
-  else if((A&0xF000)==0xA000) 
+  }
+  else if((A&0xF000)==0xA000)
    ROM_BANK8(0xA000,V);
   else
   {
@@ -47,14 +48,13 @@ static DECLFW(Mapper23_write)
     K4buf[x]|=(V&0xF)<<((A&1)<<2);
     VROM_BANK1(x<<10,K4buf[x]);
    }
-   else 
+   else
     switch(A)
     {
      case 0xf000:X6502_IRQEnd(FCEU_IQEXT);IRQLatch&=0xF0;IRQLatch|=V&0xF;break;
      case 0xf001:X6502_IRQEnd(FCEU_IQEXT);IRQLatch&=0x0F;IRQLatch|=V<<4;break;
      case 0xf002:X6502_IRQEnd(FCEU_IQEXT);acount=0;IRQCount=IRQLatch;IRQa=V&2;K4IRQ=V&1;break;
      case 0xf003:X6502_IRQEnd(FCEU_IQEXT);IRQa=K4IRQ;break;
-     case 0x9001:
      case 0x9002:
      case 0x9003:
                  if((K4sel&2)!=(V&2))
@@ -67,14 +67,16 @@ static DECLFW(Mapper23_write)
                  K4sel=V;
                  break;
      case 0x9000:
-     		switch(V&0x3)
-	        {
+     case 0x9001:
+            if(V!=0xFF)
+                     switch(V&0x3)
+                {
                  case 0:MIRROR_SET(0);break;
-	         case 1:MIRROR_SET(1);break;
-        	 case 2:onemir(0);break;
-	         case 3:onemir(1);break;
-        	}
-	        break;
+                      case 1:MIRROR_SET(1);break;
+                     case 2:onemir(0);break;
+                     case 3:onemir(1);break;
+                }
+                break;
   }
  }
 }

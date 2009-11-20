@@ -21,16 +21,16 @@
 #include "../common/args.h"
 
 char *ParseArgies(int argc, char *argv[])
-{         
-        int x; 
+{
+//        int x;
         static ARGPSTRUCT FCEUArgs[]={
          {"-pal",0,&palyo,0},
          {"-gg",0,&genie,0},
          {"-no8lim",0,&eoptions,0x8000|EO_NOSPRLIM},
-         //{"-nofs",0,&eoptions,0},   
-         {"-clipsides",0,&eoptions,0x8000|EO_CLIPSIDES},  
+         //{"-nofs",0,&eoptions,0},
+         {"-clipsides",0,&eoptions,0x8000|EO_CLIPSIDES},
          {"-nothrottle",0,&eoptions,0x8000|EO_NOTHROTTLE},
-	};
+        };
 
        if(argc<=1) return(0);
 

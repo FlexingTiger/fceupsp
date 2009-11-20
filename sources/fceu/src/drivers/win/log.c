@@ -1,25 +1,27 @@
 #include <stdlib.h>
 #include "common.h"
 
+#define MAXLOGTEXT 1024
+
 static HWND logwin=0;
 
-static char *logtext[64];
+static char *logtext[MAXLOGTEXT];
 static int logcount=0;
 
 static void RedoText(void)
 {
- char textbuf[65536];
+ char textbuf[65535];
  int x;
 
  textbuf[0]=0;
- if(logcount>=64)
+ if(logcount>=MAXLOGTEXT)
  {
-  x=logcount&63;
+  x=logcount&(MAXLOGTEXT-1);
   for(;;)
   {
    strcat(textbuf,logtext[x]);
-   x=(x+1)&63;
-   if(x==(logcount&63)) break;
+   x=(x+1)&(MAXLOGTEXT-1);
+   if(x==(logcount&(MAXLOGTEXT-1))) break;
   }
  }
  else
@@ -28,7 +30,7 @@ static void RedoText(void)
    strcat(textbuf,logtext[x]);
   }
  SetDlgItemText(logwin,100,textbuf);
- SendDlgItemMessage(logwin,100,EM_LINESCROLL,0,200);
+ SendDlgItemMessage(logwin,100,EM_LINESCROLL,0,1024*4);
 }
 
 static BOOL CALLBACK LogCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -61,7 +63,7 @@ void AddLogText(char *text,int newline)
  int x;
  char *t;
 
- if(logcount>=64) free(logtext[logcount&63]);
+ if(logcount>=MAXLOGTEXT) free(logtext[logcount&(MAXLOGTEXT-1)]);
 
  x=0;
  t=text;
@@ -71,10 +73,10 @@ void AddLogText(char *text,int newline)
   t++;
  }
 
- if(!(logtext[logcount&63]=malloc(strlen(text)+1+x+newline*2)))
+ if(!(logtext[logcount&(MAXLOGTEXT-1)]=malloc(strlen(text)+1+x+newline*2)))
   return;
 
- t=logtext[logcount&63];
+ t=logtext[logcount&(MAXLOGTEXT-1)];
 
  while(*text)
  {

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+/*
 #include "mapinc.h"
 
 
@@ -35,5 +35,4 @@ void Mapper240_init(void)
 {
   SetWriteHandler(0x4020,0x5fff,Mapper240_write);
   SetWriteHandler(0x8000,0xffff,Mapper240_write);
-}
-
+}*/

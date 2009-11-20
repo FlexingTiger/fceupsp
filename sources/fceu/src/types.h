@@ -25,15 +25,16 @@
 #include <inttypes.h>
 typedef int8_t int8;
 typedef int16_t int16;
-typedef int32_t int32; 
+typedef int32_t int32;
 
-typedef uint8_t uint8;  
+typedef uint8_t uint8;
 typedef uint16_t uint16;
 typedef uint32_t uint32;
 
 //typedef unsigned char uint8;
-//typedef unsigned short uint16;   
+//typedef unsigned short uint16;
 //typedef unsigned long  uint32;
+
 
 #ifdef __GNUC__
  typedef unsigned long long uint64;
@@ -44,12 +45,12 @@ typedef uint32_t uint32;
  typedef __int64 int64;
  typedef unsigned __int64 uint64;
  #define INLINE __inline
- #define GINLINE			/* Can't declare a function INLINE
-					   and global in MSVC.  Bummer.
-					*/
- #define PSS_STYLE 2			/* Does MSVC compile for anything
-					   other than Windows/DOS targets?
-					*/
+ #define GINLINE      /* Can't declare a function INLINE
+             and global in MSVC.  Bummer.
+          */
+ #define PSS_STYLE 2      /* Does MSVC compile for anything
+             other than Windows/DOS targets?
+          */
 #endif
 
 #if PSS_STYLE==2
@@ -69,7 +70,7 @@ typedef uint32_t uint32;
 
 #elif PSS_STYLE==4
 
-#define PSS ":" 
+#define PSS ":"
 #define PS ':'
 
 #endif
@@ -80,8 +81,8 @@ typedef uint32_t uint32;
   #define FASTAPASS(x) __attribute__((regparm(x)))
   #define FP_FASTAPASS FASTAPASS
  #else
-  #define FASTAPASS(x)	
-  #define FP_FASTAPASS(x)	
+  #define FASTAPASS(x)
+  #define FP_FASTAPASS(x)
  #endif
 #elif MSVC
  #define FP_FASTAPASS(x)

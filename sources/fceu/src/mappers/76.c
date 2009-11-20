@@ -19,8 +19,7 @@
  */
 
 #include "mapinc.h"
-
-
+static uint8 MMC3_cmd;
 
 static DECLFW(Mapper76_write)
 {
@@ -35,7 +34,7 @@ static DECLFW(Mapper76_write)
                 case 4: VROM_BANK2(0x1000,V);break;
                 case 5: VROM_BANK2(0x1800,V);break;
                 case 6:
-                        if (MMC3_cmd&0x40) ROM_BANK8(0xC000,V);
+                        if(MMC3_cmd&0x40) ROM_BANK8(0xC000,V);
                         else ROM_BANK8(0x8000,V);
                         break;
                 case 7: ROM_BANK8(0xA000,V);

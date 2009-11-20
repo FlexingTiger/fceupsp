@@ -23,7 +23,7 @@
 static DECLFW(Mapper201_write)
 {
 //  FCEU_printf("%04x, %02x\n",A,V);
-  if (A&0x08)
+  if(A&0x08)
   {
      ROM_BANK32(A&0x03);
      VROM_BANK8(A&0x03);
@@ -37,8 +37,8 @@ static DECLFW(Mapper201_write)
 
 void Mapper201_init(void)
 {
-  ROM_BANK32(0);
-  VROM_BANK8(0);
+  ROM_BANK32(~0);
+  VROM_BANK8(~0);
   SetWriteHandler(0x8000,0xffff,Mapper201_write);
 }
 

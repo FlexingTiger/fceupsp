@@ -78,7 +78,7 @@ void SetDirs(void)
  FCEUI_SetSnapName(eoptions&EO_SNAPNAME);
 
  for(x=0;x<5;x++)
-  FCEUI_SetDirOverride(jlist[x], DOvers[x]);  
+  FCEUI_SetDirOverride(jlist[x], DOvers[x]);
  if(DOvers[5])
   FCEUI_SetBaseDirectory(DOvers[5]);
  else
@@ -146,7 +146,7 @@ static int maxconbskip = 9;             /* Maximum consecutive blit skips. */
 static int ffbskip = 9;              /* Blit skips per blit when FF-ing */
 
 static int fullscreen=0;
-static int soundflush=0;
+//static int soundflush=0;
 static int genie=0;
 static int palyo=0;
 static int windowedfailed;
@@ -191,9 +191,9 @@ static void FixFL(void)
 }
 
 static void UpdateRendBounds(void)
-{ 
+{
  FCEUI_SetRenderedLines(srendlinen,erendlinen,srendlinep,erendlinep);
- FixFL(); 
+ FixFL();
 }
 
 static uint8 cpalette[192];
@@ -236,8 +236,12 @@ void DoFCEUExit(void)
  exiting=1;
  if(GI)
  {
+  #ifdef FCEUDEF_DEBUGGER
+  KillDebugger();
+  #endif
   FCEUI_CloseGame();
   GI=0;
+  RedoMenuGI(GI);
  }
 }
 
@@ -278,7 +282,7 @@ int DriverInitialize(void)
 }
 
 static void DriverKill(void)
-{ 
+{
  sprintf(TempArray,"%s/fceu98.cfg",BaseDirectory);
  SaveConfig(TempArray);
  DestroyInput();
@@ -348,7 +352,7 @@ int main(int argc,char *argv[])
 
   if(!DriverInitialize())
    goto doexito;
- 
+
   InitSpeedThrottle();
   UpdateMenu();
 
@@ -358,7 +362,7 @@ int main(int argc,char *argv[])
    LoadNewGamey(hAppWnd, 0);
 
   doloopy:
-  UpdateFCEUWindow();  
+  UpdateFCEUWindow();
   if(GI)
   {
    while(GI)
@@ -402,7 +406,7 @@ void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int Count)
   int32 tmpcan;
   extern int FCEUDnetplay;
 
-  if(can >= GetMaxSound()) uflow=1;	/* Go into massive underflow mode. */
+  if(can >= GetMaxSound()) uflow=1;        /* Go into massive underflow mode. */
 
   if(can > Count) can=Count;
   else uflow=0;
@@ -428,7 +432,7 @@ void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int Count)
    {
     if(NoWaiting)
     {
-     can=GetWriteSound(); 
+     can=GetWriteSound();
      if(Count>can) Count=can;
     }
     FCEUD_WriteSoundData(Buffer,Count);
@@ -458,7 +462,7 @@ void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int Count)
      Make sure this special speed throttling hasn't been disabled by the user
      first. Second, we don't want to throttle the speed if the fast-forward
      button is pressed down(or during certain network play conditions).
-       
+
      Now, if we're at this point, we'll throttle speed if sound is disabled.
      Otherwise, it gets a bit more complicated.  We'll throttle speed if focus
      to FCE Ultra has been lost and we're writing to the primary sound buffer
@@ -488,6 +492,7 @@ void FCEUD_Update(uint8 *XBuf, int32 *Buffer, int Count)
  }
  UpdateFCEUWindow();
  FCEUD_UpdateInput();
+ PPUViewDoBlit();
 }
 
 /*

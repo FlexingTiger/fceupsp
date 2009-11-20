@@ -20,16 +20,18 @@
 
 #include "mapinc.h"
 
+static uint8 latch;
+
 static void DoNovel(void)
 {
- setprg32(0x8000,GameMemBlock[0]&3);
- setchr8(GameMemBlock[0]&7);
+  setprg32(0x8000,latch&3);
+  setchr8(latch&7);
 }
 
 static DECLFW(NovelWrite)
 {
- GameMemBlock[0]=A&0xFF;
- DoNovel();
+  latch=A&0xFF;
+  DoNovel();
 }
 
 static void NovelReset(void)
@@ -42,12 +44,12 @@ static void NovelReset(void)
 
 static void NovelRestore(int version)
 {
- DoNovel();
+  DoNovel();
 }
 
 void Novel_Init(CartInfo *info)
 {
-  AddExState(&GameMemBlock[0], 1, 0,"L1");
+  AddExState(&latch, 1, 0,"L1");
   info->Power=NovelReset;
   GameStateRestore=NovelRestore;
 }

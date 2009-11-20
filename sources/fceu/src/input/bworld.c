@@ -27,21 +27,21 @@ static uint8 bdata[20];
 
 static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
 {
- if(w && have) 
+ if(w && have)
  {
   switch(seq)
   {
    case 0: seq++; ptr=0; ret|=0x4; break;
    case 1: seq++; bit=bdata[ptr]; cnt=0; ret|=0x4; break;
    case 2: ret|=((bit&0x01)^0x01)<<2; bit>>=1; if(++cnt > 7) seq++;
-	   break;
+           break;
    case 3: if(++ptr > 19)
-	   {
-	    seq=-1;
-	    have=0;
-	   }
-	   else
-	    seq=1;
+           {
+            seq=-1;
+            have=0;
+           }
+           else
+            seq=1;
    default: break;
   }
  }

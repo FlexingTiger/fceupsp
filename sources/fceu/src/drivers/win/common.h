@@ -34,7 +34,7 @@ extern int eoptions;
 #define EO_FOAFTERSTART  64
 #define EO_NOTHROTTLE   128
 #define EO_CLIPSIDES    256
-#define EO_SNAPNAME	512
+#define EO_SNAPNAME        512
 #define EO_HIDEMENU    2048
 #define EO_HIGHPRIO    4096
 #define EO_FORCEASPECT  8192

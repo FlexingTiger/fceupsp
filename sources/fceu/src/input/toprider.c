@@ -26,37 +26,32 @@ static uint32 boop;
 
 static uint8 FP_FASTAPASS(2) Read(int w, uint8 ret)
 {
- if(w) 
- {
-  ret|=(bs&1)<<3;
-  ret|=(boop&1)<<4;
-  bs>>=1;  
-  boop>>=1;
-//  puts("Read");
- }
- return(ret);
+  if(w)
+  {
+    ret|=(bs&1)<<3;
+    ret|=(boop&1)<<4;
+    bs>>=1;
+    boop>>=1;
+  }
+  return(ret);
 }
 
 static void FP_FASTAPASS(1) Write(uint8 V)
 {
- // if(V&0x2) 
- bs=bss;
- printf("Write: %02x\n",V);
-// boop=0xC0;
+  bs=bss;
 }
 
 static void FP_FASTAPASS(2) Update(void *data, int arg)
 {
- bss=*(uint8*)data;
- bss|=bss<<8;
- bss|=bss<<8;
+  bss=*(uint8*)data;
+  bss|=bss<<8;
+  bss|=bss<<8;
 }
 
 static INPUTCFC TopRider={Read,Write,0,Update,0,0};
 
 INPUTCFC *FCEU_InitTopRider(void)
 {
-
- return(&TopRider);
+  return(&TopRider);
 }
 

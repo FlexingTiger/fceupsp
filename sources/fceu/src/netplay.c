@@ -29,7 +29,7 @@
 
 #include "types.h"
 #include "netplay.h"
-#include        "fceu.h"
+#include "fceu.h"
 #include "general.h"
 #include "state.h"
 #include "cheat.h"
@@ -55,27 +55,27 @@ static void NetError(void)
 
 void FCEUI_NetplayStop(void)
 {
-	if(FCEUnetplay)
-	{
-	 FCEUnetplay = 0;
- 	 FCEU_FlushGameCheats(0,1);	/* Don't save netplay cheats. */
- 	 FCEU_LoadGameCheats(0);		/* Reload our original cheats. */
-	}
-	else puts("Check your code!");
+  if(FCEUnetplay)
+  {
+   FCEUnetplay = 0;
+    FCEU_FlushGameCheats(0,1);  /* Don't save netplay cheats. */
+    FCEU_LoadGameCheats(0);    /* Reload our original cheats. */
+  }
+  else puts("Check your code!");
 }
 
 int FCEUI_NetplayStart(int nlocal, int divisor)
 {
-	FCEU_FlushGameCheats(0, 0);	/* Save our pre-netplay cheats. */
-	FCEU_LoadGameCheats(0);		/* Load them again, for pre-multiplayer
-					   action.
-					*/
-	FCEUnetplay = 1;
-        memset(netjoy,0,sizeof(netjoy));
-        numlocal = nlocal;
-	netdivisor = divisor;
-	netdcount = 0;
-	return(1);
+  FCEU_FlushGameCheats(0, 0);  /* Save our pre-netplay cheats. */
+  FCEU_LoadGameCheats(0);    /* Load them again, for pre-multiplayer
+             action.
+          */
+  FCEUnetplay = 1;
+  memset(netjoy,0,sizeof(netjoy));
+  numlocal = nlocal;
+  netdivisor = divisor;
+  netdcount = 0;
+  return(1);
 }
 
 int FCEUNET_SendCommand(uint8 cmd, uint32 len)
@@ -86,7 +86,7 @@ int FCEUNET_SendCommand(uint8 cmd, uint32 len)
  FCEU_en32lsb(&buf[numlocal], len);
  buf[numlocal + 4] = cmd;
  #ifdef NETWORK
- if(!FCEUD_SendData(buf,numlocal + 1 + 4)) 
+ if(!FCEUD_SendData(buf,numlocal + 1 + 4))
  {
   NetError();
   return(0);
@@ -152,67 +152,67 @@ int FCEUNET_SendFile(uint8 cmd, char *fn)
 
 static FILE *FetchFile(uint32 remlen)
 {
-				uint32 clen = remlen;
-                               	char *cbuf;
-                                uLongf len;
-                                char *buf;  
-                                FILE *fp;
-                                char *fn;   
-                                 
-				if(clen > 500000)	// Sanity check
-				{
-				 NetError();
-				 return(0);
-				}
+        uint32 clen = remlen;
+               char *cbuf;
+        uLongf len;
+        char *buf;
+        FILE *fp;
+        char *fn;
 
-                                //printf("Receiving file: %d...\n",clen);
-                                fn = FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
-                                if((fp = fopen(fn,"w+b")))
-                                {
-                                 cbuf = malloc(clen);
-                                 if(!FCEUD_RecvData(cbuf, clen))
-				 {
-				  NetError();
-				  unlink(fn);
-				  fclose(fp);
-				  free(cbuf);
-				  free(fn);
-				  return(0);
-				 }
-                             
-                                 len = FCEU_de32lsb(cbuf);
-				 if(len > 500000)		// Another sanity check
-				 {
-				  NetError();
-				  unlink(fn);
-				  fclose(fp);
-				  free(cbuf);
-				  free(fn);
-				  return(0);
-				 }
-                                 buf = malloc(len);
-                                 uncompress(buf, &len, cbuf + 4, clen - 4);
-                                
-                                 fwrite(buf, 1, len, fp);
-                                 free(buf);
-                                 fseek(fp, 0, SEEK_SET);
-				 unlink(fn);
-				 free(fn);
-				 return(fp);
-				}
-				free(fn);
-				return(0);
+        if(clen > 500000)  // Sanity check
+        {
+         NetError();
+         return(0);
+        }
+
+        //printf("Receiving file: %d...\n",clen);
+        fn = FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
+        if((fp = fopen(fn,"w+b")))
+        {
+         cbuf = malloc(clen);
+         if(!FCEUD_RecvData(cbuf, clen))
+         {
+          NetError();
+          unlink(fn);
+          fclose(fp);
+          free(cbuf);
+          free(fn);
+          return(0);
+         }
+
+         len = FCEU_de32lsb(cbuf);
+         if(len > 500000)    // Another sanity check
+         {
+          NetError();
+          unlink(fn);
+          fclose(fp);
+          free(cbuf);
+          free(fn);
+          return(0);
+         }
+         buf = malloc(len);
+         uncompress(buf, &len, cbuf + 4, clen - 4);
+
+         fwrite(buf, 1, len, fp);
+         free(buf);
+         fseek(fp, 0, SEEK_SET);
+         unlink(fn);
+         free(fn);
+         return(fp);
+        }
+        free(fn);
+        return(0);
 }
 
 void NetplayUpdate(uint8 *joyp)
 {
- static uint8 buf[5];	/* 4 play states, + command/extra byte */
+ static uint8 buf[5];  /* 4 play states, + command/extra byte */
  static uint8 joypb[4];
 
  memcpy(joypb,joyp,4);
 
  /* This shouldn't happen, but just in case.  0xFF is used as a command escape elsewhere. */
- if(joypb[0] == 0xFF) 
+ if(joypb[0] == 0xFF)
   joypb[0] = 0xF;
  #ifdef NETWORK
  if(!netdcount)
@@ -235,91 +235,91 @@ void NetplayUpdate(uint8 *joyp)
   {
    default: FCEU_DoSimpleCommand(buf[4]);break;
    case FCEUNPCMD_TEXT:
-		       {
-			uint8 *tbuf;
-			uint32 len = FCEU_de32lsb(buf);
+           {
+      uint8 *tbuf;
+      uint32 len = FCEU_de32lsb(buf);
 
-			if(len > 100000)	// Insanity check!
-			{
-			 NetError();
-			 return;
-			}
-			tbuf = malloc(len + 1);
-			tbuf[len] = 0;
-                        if(!FCEUD_RecvData(tbuf, len))
-                        {
-                         NetError();
-                         free(tbuf);
-                         return;
-                        }
-			FCEUD_NetplayText(tbuf);
-			free(tbuf);
-		       }
-		       break;
-   case FCEUNPCMD_SAVESTATE:	
-			    {
-			       char *fn;
-			        FILE *fp;
+      if(len > 100000)  // Insanity check!
+      {
+       NetError();
+       return;
+      }
+      tbuf = malloc(len + 1);
+      tbuf[len] = 0;
+      if(!FCEUD_RecvData(tbuf, len))
+      {
+       NetError();
+       free(tbuf);
+       return;
+      }
+      FCEUD_NetplayText(tbuf);
+      free(tbuf);
+           }
+           break;
+   case FCEUNPCMD_SAVESTATE:
+          {
+             char *fn;
+        FILE *fp;
 
-				/* Send the cheats first, then the save state, since
-				   there might be a frame or two in between the two sendfile
-				   commands on the server side.
-				*/
-				fn = FCEU_MakeFName(FCEUMKF_CHEAT,0,0);
-                                //if(!
-                                FCEUNET_SendFile(FCEUNPCMD_LOADCHEATS,fn);
+        /* Send the cheats first, then the save state, since
+           there might be a frame or two in between the two sendfile
+           commands on the server side.
+        */
+        fn = FCEU_MakeFName(FCEUMKF_CHEAT,0,0);
+        //if(!
+        FCEUNET_SendFile(FCEUNPCMD_LOADCHEATS,fn);
 
-                               // {
-                               //  free(fn);
-                               //  return;
-                               // }
-				free(fn);
-                                if(!FCEUnetplay) return;
-                               
-			        fn = FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
-			        fp = fopen(fn, "wb");
-			        if(FCEUSS_SaveFP(fp))
-			        {
-			         fclose(fp);
-			         if(!FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn))
-				 {
-				  unlink(fn);
-				  free(fn);
-				  return;
-				 }
-			         unlink(fn);
-			         free(fn);
-			        }
-			        else
-			        {
-			         fclose(fp);
-			         FCEUD_PrintError("File error.  (K)ill, (M)aim, (D)estroy?  Now!");
-			         unlink(fn);
-			         free(fn);
-		        	 return;
-			        }
+             // {
+             //  free(fn);
+             //  return;
+             // }
+        free(fn);
+        if(!FCEUnetplay) return;
 
-			    }
-  	  	 	    break;
+        fn = FCEU_MakeFName(FCEUMKF_NPTEMP,0,0);
+        fp = fopen(fn, "wb");
+        if(FCEUSS_SaveFP(fp))
+        {
+         fclose(fp);
+         if(!FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn))
+         {
+          unlink(fn);
+          free(fn);
+          return;
+         }
+         unlink(fn);
+         free(fn);
+        }
+        else
+        {
+         fclose(fp);
+         FCEUD_PrintError("File error.  (K)ill, (M)aim, (D)estroy?  Now!");
+         unlink(fn);
+         free(fn);
+         return;
+        }
+
+          }
+         break;
    case FCEUNPCMD_LOADCHEATS:
-				{
-				 FILE *fp = FetchFile(FCEU_de32lsb(buf));
-				 if(!fp) return;
-				 FCEU_FlushGameCheats(0,1);
-				 FCEU_LoadGameCheats(fp);
-				}
-				break;  
+        {
+         FILE *fp = FetchFile(FCEU_de32lsb(buf));
+         if(!fp) return;
+         FCEU_FlushGameCheats(0,1);
+         FCEU_LoadGameCheats(fp);
+        }
+        break;
  case FCEUNPCMD_LOADSTATE:
-				{
-				 FILE *fp = FetchFile(FCEU_de32lsb(buf));
-				 if(!fp) return;
-				 if(FCEUSS_LoadFP(fp))
-				 {
-				  fclose(fp);				
-			          FCEU_DispMessage("Remote state loaded.");
-				 } else FCEUD_PrintError("File error.  (K)ill, (M)aim, (D)estroy?");
-			    }
-			    break;
+        {
+         FILE *fp = FetchFile(FCEU_de32lsb(buf));
+         if(!fp) return;
+         if(FCEUSS_LoadFP(fp))
+         {
+          fclose(fp);
+          FCEU_DispMessage("Remote state loaded.");
+         } else FCEUD_PrintError("File error.  (K)ill, (M)aim, (D)estroy?");
+          }
+          break;
   }
  } while(buf[4]);
  #endif

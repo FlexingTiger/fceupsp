@@ -1,7 +1,7 @@
 /* FCE Ultra - NES/Famicom Emulator
  *
  * Copyright notice for this file:
- *  Copyright (C) 2002 Xodnizel
+ *  Copyright (C) 2005 CaH4e3
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,135 +19,75 @@
  */
 
 #include "mapinc.h"
+#include "mmc3.h"
 
 static uint8 cmdin;
-static uint8 cmd;
-static uint8 regs[8];
-static uint8 master,chrm;
+static uint8 UNL8237_perm[8] = {0, 2, 6, 1, 7, 3, 4, 5};
 
-static int32 IRQCount,IRQa;
-
-static void DoPRG(void)
+static void UNL8237CW(uint32 A, uint8 V)
 {
- if(master&0x80)
- {
-  if(master&0x20)
-  {
-   setprg32(0x8000,(master&0xF)>>1);
-  }
-  else
-  {
-   setprg16(0x8000,master&0xF);
-   setprg16(0xC000,master&0xF);  
-  }
- }
- else
- {
-  setprg8(0xA000,regs[4]);
-  setprg8(0xE000,~0);
-  if(cmd&0x40)
-  {
-   setprg8(0xC000,regs[2]);
-   setprg8(0x8000,~1);
-  }
-  else
-  {
-   setprg8(0x8000,regs[2]);
-   setprg8(0xC000,~1);
-  }
- }
+  setchr1(A,((EXPREGS[1]&4)<<6)|V);
 }
 
-static void DoCHR(void)
+static void UNL8237PW(uint32 A, uint8 V)
 {
- uint32 base=(cmd&0x80)<<5;
- int orie=(chrm&0x4)<<6;
-
- setchr2(0x0000^base,(orie|regs[0])>>1); //K
- setchr2(0x0800^base,(orie|regs[3])>>1); //43
- 
- setchr1(0x1000,orie|regs[1]);
- setchr1(0x1400,orie|regs[5]);
- setchr1(0x1800,orie|regs[6]);
- setchr1(0x1c00,orie|regs[7]);
+  if(EXPREGS[0]&0x80)
+  {
+    if(EXPREGS[0]&0x20)
+      setprg32(0x8000,(EXPREGS[0]&0xF)>>1);
+    else
+    {
+      setprg16(0x8000,(EXPREGS[0]&0x1F));
+      setprg16(0xC000,(EXPREGS[0]&0x1F));
+    }
+  }
+  else
+    setprg8(A,V&0x3F);
 }
 
 static DECLFW(UNL8237Write)
 {
- switch(A&0xF000)
- {
-  case 0xf000:IRQCount=V;break;
-  case 0xE000:X6502_IRQEnd(FCEU_IQEXT);break;
- }
-// if(A<0x8000)
-//  printf("$%04x:$%02x, %d\n",A&0xFFFF,V,scanline);
- if(A==0x5000)
- {
-  master=V;
-  DoPRG();
-  DoCHR();  
- }
- else if(A==0x5001)
- {
-  chrm=V;
-  DoCHR();
- }
- else
- switch(A&0xE000)
- {
-  case 0x8000:setmirror(((V|(V>>7))&1)^1);break;
-  case 0xa000:cmd=V;cmdin=1;DoPRG();DoCHR();break;
-  case 0xC000:if(!cmdin) break;
-	      regs[cmd&7]=V;
-	      DoPRG();
-	      DoCHR();
-	      cmdin=0;
-	      break;
- }
-}
-
-static void UNL8237Reset(void)
-{
-  int x;
-
-  for(x=0;x<8;x++) regs[x]=0;  
-  master=chrm=cmd=cmdin=IRQCount=IRQa=0;
-  SetReadHandler(0x8000,0xFFFF,CartBR);
-  SetWriteHandler(0x5000,0xFFFF,UNL8237Write);
-  DoPRG();
-  DoCHR();
-}
-
-static void hooko(void)
-{
- if(IRQCount)
- {
-  IRQCount--;
-  if(!IRQCount)
+  if((A&0xF000)==0xF000)
+    IRQCount=V;
+  else if((A&0xF000)==0xE000)
+    X6502_IRQEnd(FCEU_IQEXT);
+  else switch(A&0xE001)
   {
-   X6502_IRQBegin(FCEU_IQEXT);
-   //printf("IRQ: %d\n",scanline);
+    case 0x8000: setmirror(((V|(V>>7))&1)^1); break;
+    case 0xA000: MMC3_CMDWrite(0x8000,(V&0xC0)|(UNL8237_perm[V&7])); cmdin=1; break;
+    case 0xC000: if(cmdin)
+                 {
+                   MMC3_CMDWrite(0x8001,V);
+                   cmdin=0;
+                 }
+                 break;
   }
- }
 }
 
-static void restoreo(int version)
+static DECLFW(UNL8237ExWrite)
 {
- DoPRG();
- DoCHR();
+  switch(A)
+  {
+    case 0x5000: EXPREGS[0]=V; FixMMC3PRG(MMC3_cmd); break;
+    case 0x5001: EXPREGS[1]=V; FixMMC3CHR(MMC3_cmd); break;
+  }
+}
+
+static void UNL8237Power(void)
+{
+  IRQa=1;
+  EXPREGS[0]=EXPREGS[1]=0;
+  GenMMC3Power();
+  SetWriteHandler(0x8000,0xFFFF,UNL8237Write);
+  SetWriteHandler(0x5000,0x7FFF,UNL8237ExWrite);
 }
 
 void UNL8237_Init(CartInfo *info)
 {
-  GameStateRestore=restoreo;
-  GameHBIRQHook=hooko;
-  info->Power=UNL8237Reset;
-
-  AddExState(regs, 8, 0, "REGS");
-  AddExState(&IRQCount, 4, 1, "IRQC");
-  AddExState(&IRQa, 1, 0, "IRQA");
-  AddExState(&master, 1, 0, "MAST");
-  AddExState(&chrm,1,0,"CHRM");
-  AddExState(&cmd,1,0,"CMD");
-  AddExState(&cmdin,1,0,"CMDI");
+  GenMMC3_Init(info, 256, 256, 0, 0);
+  cwrap=UNL8237CW;
+  pwrap=UNL8237PW;
+  info->Power=UNL8237Power;
+  AddExState(EXPREGS, 3, 0, "EXPR");
+  AddExState(&cmdin, 1, 0, "CMDIN");
 }

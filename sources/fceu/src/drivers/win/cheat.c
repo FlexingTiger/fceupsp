@@ -163,7 +163,7 @@ static BOOL CALLBACK AddCheatCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
   static HWND hwndLB;
 
   switch(uMsg)
-  {                                                                               
+  {
    case WM_VSCROLL:
                 if(scrollnum>(CSTOD-1))
                 {
@@ -227,7 +227,7 @@ static BOOL CALLBACK AddCheatCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                         break;
                  }
 
-                }                
+                }
                 break;
 
    case WM_INITDIALOG:
@@ -252,7 +252,7 @@ static BOOL CALLBACK AddCheatCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                  real=SendDlgItemMessage(hwndDlg,108,LB_GETCURSEL,0,(LPARAM)(LPSTR)0);
                  switch((int)LOWORD(wParam))
                  {
-                  case VK_UP: 
+                  case VK_UP:
                               /* mmmm....recursive goodness */
                               if(!real)
                                SendMessage(hwndDlg,WM_VSCROLL,SB_LINEUP,0);
@@ -291,7 +291,7 @@ static BOOL CALLBACK AddCheatCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                          char *s;
                          uint32 a;
                          uint8 v;
-			 int status;
+                         int status;
                          int c,type;
 
                          selcheat=SendDlgItemMessage(hwndDlg,300,LB_GETCURSEL,0,(LPARAM)(LPSTR)0);
@@ -318,7 +318,7 @@ static BOOL CALLBACK AddCheatCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                                   char TempArray[32];
                                   SendDlgItemMessage(hwndDlg,108,LB_GETTEXT,SendDlgItemMessage(hwndDlg,108,LB_GETCURSEL,0,(LPARAM)(LPSTR)0),(LPARAM)(LPCTSTR)TempArray);
                                   TempArray[4]=0;
-                                  SetDlgItemText(hwndDlg,201,(LPTSTR)TempArray);                                 
+                                  SetDlgItemText(hwndDlg,201,(LPTSTR)TempArray);
                                  }
                                  break;
                          case LBN_SETFOCUS:
@@ -346,7 +346,7 @@ static BOOL CALLBACK AddCheatCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                  case BN_CLICKED:
                         if(LOWORD(wParam)>=115 && LOWORD(wParam)<=120)
                          scheatmethod=LOWORD(wParam)-115;
-                        else switch(LOWORD(wParam))        
+                        else switch(LOWORD(wParam))
                         {
                          case 112:
                           FCEUI_CheatSearchBegin();

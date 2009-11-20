@@ -32,7 +32,7 @@
 
 #include "general.h"
 
-/* 
+/*
    This file contains all code for coordinating the mapping in of the
    address space external to the NES.
    It's also (ab)used by the NSF code.
@@ -44,7 +44,7 @@ uint8 *VPageG[8];
 uint8 *MMC5SPRVPage[8];
 uint8 *MMC5BGVPage[8];
 
-static uint8 PRGIsRAM[32];	/* This page is/is not PRG RAM. */
+static uint8 PRGIsRAM[32];  /* This page is/is not PRG RAM. */
 
 /* 16 are (sort of) reserved for UNIF/iNES and 16 to map other stuff. */
 static int CHRram[32];
@@ -122,7 +122,7 @@ void SetupCartPRGMapping(int chip, uint8 *p, uint32 size, int ram)
  PRGmask4[chip]=(size>>12)-1;
  PRGmask8[chip]=(size>>13)-1;
  PRGmask16[chip]=(size>>14)-1;
- PRGmask32[chip]=(size>>15)-1; 
+ PRGmask32[chip]=(size>>15)-1;
 
  PRGram[chip]=ram?1:0;
 }
@@ -161,7 +161,6 @@ DECLFR(CartBROB)
 void FASTAPASS(3) setprg2r(int r, unsigned int A, unsigned int V)
 {
   V&=PRGmask2[r];
-
   setpageptr(2,A,PRGptr[r]?(&PRGptr[r][V<<11]):0,PRGram[r]);
 }
 
@@ -416,7 +415,10 @@ void FASTAPASS(1) setmirror(int t)
 void SetupCartMirroring(int m, int hard, uint8 *extra)
 {
  if(m<4)
+ {
+  mirrorhard = 0;
   setmirror(m);
+ }
  else
  {
   vnapage[0]=NTARAM;
@@ -462,7 +464,7 @@ void OpenGenie(void)
    fclose(fp);
    return;
   }
-  if(GENIEROM[0]==0x4E)	/* iNES ROM image */
+  if(GENIEROM[0]==0x4E)  /* iNES ROM image */
   {
    if(fread(GENIEROM,1,4096,fp)!=4096)
     goto grerr;
@@ -477,7 +479,7 @@ void OpenGenie(void)
     goto grerr;
   }
   fclose(fp);
- 
+
   /* Workaround for the FCE Ultra CHR page size only being 1KB */
   for(x=0;x<4;x++)
    memcpy(GENIEROM+4096+(x<<8),GENIEROM+4096,256);
@@ -530,14 +532,14 @@ static DECLFW(GenieWrite)
   case 0x8001:genieaddr[((A-1)&0xF)>>2]&=0xFF;genieaddr[((A-1)&0xF)>>2]|=(V|0x80)<<8;break;
 
   case 0x8000:if(!V)
-               FixGenieMap();
-              else
-              {
-               modcon=V^0xFF;
-               if(V==0x71) 
-		modcon=0;
-              }
-              break;
+         FixGenieMap();
+        else
+        {
+         modcon=V^0xFF;
+         if(V==0x71)
+    modcon=0;
+        }
+        break;
  }
 }
 
@@ -547,7 +549,7 @@ static DECLFR(GenieFix1)
 {
  uint8 r=GenieBackup[0](A);
 
- if((modcon>>1)&1)		// No check
+ if((modcon>>1)&1)    // No check
   return genieval[0];
  else if(r==geniech[0])
   return genieval[0];
@@ -559,7 +561,7 @@ static DECLFR(GenieFix2)
 {
  uint8 r=GenieBackup[1](A);
 
- if((modcon>>2)&1)              // No check
+ if((modcon>>2)&1)        // No check
   return genieval[1];
  else if(r==geniech[1])
   return genieval[1];
@@ -571,7 +573,7 @@ static DECLFR(GenieFix3)
 {
  uint8 r=GenieBackup[2](A);
 
- if((modcon>>3)&1)              // No check
+ if((modcon>>3)&1)        // No check
   return genieval[2];
  else if(r==geniech[2])
   return genieval[2];
@@ -591,7 +593,7 @@ void FixGenieMap(void)
 
  VPageR=VPage;
  FlushGenieRW();
- //printf("Rightyo\n"); 
+ //printf("Rightyo\n");
  for(x=0;x<3;x++)
   if((modcon>>(4+x))&1)
   {
@@ -631,9 +633,9 @@ void GeniePower(void)
 
 
 void FCEU_SaveGameSave(CartInfo *LocalHWInfo)
-{  
+{
  if(LocalHWInfo->battery && LocalHWInfo->SaveGame[0])
- { 
+ {
   FILE *sp;
   char *soot;
 
@@ -645,25 +647,25 @@ void FCEU_SaveGameSave(CartInfo *LocalHWInfo)
   else
   {
    int x;
-  
+
    for(x=0;x<4;x++)
     if(LocalHWInfo->SaveGame[x])
     {
      fwrite(LocalHWInfo->SaveGame[x],1,
-      LocalHWInfo->SaveGameLen[x],sp); 
+      LocalHWInfo->SaveGameLen[x],sp);
     }
   }
   free(soot);
- } 
-}  
-   
+ }
+}
+
 void FCEU_LoadGameSave(CartInfo *LocalHWInfo)
 {
  if(LocalHWInfo->battery && LocalHWInfo->SaveGame[0])
  {
   FILE *sp;
   char *soot;
-  
+
   soot=FCEU_MakeFName(FCEUMKF_SAV,0,"sav");
   sp=FCEUD_UTF8fopen(soot,"rb");
   if(sp!=NULL)
@@ -673,7 +675,11 @@ void FCEU_LoadGameSave(CartInfo *LocalHWInfo)
     if(LocalHWInfo->SaveGame[x])
      fread(LocalHWInfo->SaveGame[x],1,LocalHWInfo->SaveGameLen[x],sp);
   }
+//  else
+//  {
+//   FCEU_PrintError("WRAM file \"%s\" cannot be opened.\n",soot);
+//  }
   free(soot);
- } 
-}  
+ }
+}
 

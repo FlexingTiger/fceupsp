@@ -169,8 +169,8 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
 
   for (j=0; j<Yres; j++)
   {
-    if (j>0)      prevline = -Xres*2; else prevline = 0;
-    if (j<Yres-1) nextline =  Xres*2; else nextline = 0;
+    if(j>0)      prevline = -Xres*2; else prevline = 0;
+    if(j<Yres-1) nextline =  Xres*2; else nextline = 0;
 
     for (i=0; i<Xres; i++)
     {
@@ -182,7 +182,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
       w[5] = *((unsigned short*)pIn);
       w[8] = *((unsigned short*)(pIn + nextline));
 
-      if (i>0)
+      if(i>0)
       {
         w[1] = *((unsigned short*)(pIn + prevline - 2));
         w[4] = *((unsigned short*)(pIn - 2));
@@ -195,7 +195,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         w[7] = w[8];
       }
 
-      if (i<Xres-1)
+      if(i<Xres-1)
       {
         w[3] = *((unsigned short*)(pIn + prevline + 2));
         w[6] = *((unsigned short*)(pIn + 2));
@@ -219,20 +219,20 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
 
       for (k=1; k<=9; k++)
       {
-        if (k==5) continue;
+        if(k==5) continue;
 
-        if ( w[k] != w[5] )
+        if( w[k] != w[5] )
         {
           int YUV2 = RGBtoYUV[w[k]];
-	  //int tmp;
-	  //tmp = 
-	  //((unsigned int)(0-abs(YUV1Y - (YUV2 & Ymask)))>>31) |
-	  //((unsigned int)(0-abs(YUV1U - (YUV2 & Umask)))>>31) |
-	  //((unsigned int)(0-abs(YUV1V - (YUV2 & Vmask)))>>31);
+          //int tmp;
+          //tmp =
+          //((unsigned int)(0-abs(YUV1Y - (YUV2 & Ymask)))>>31) |
+          //((unsigned int)(0-abs(YUV1U - (YUV2 & Umask)))>>31) |
+          //((unsigned int)(0-abs(YUV1V - (YUV2 & Vmask)))>>31);
 
-	  //pattern|=tmp*flag;
+          //pattern|=tmp*flag;
 
-          if ( ( abs(YUV1Y - (YUV2 & Ymask)) > trY ) ||
+          if( ( abs(YUV1Y - (YUV2 & Ymask)) > trY ) ||
                ( abs(YUV1U - (YUV2 & Umask)) > trU ) ||
                ( abs(YUV1V - (YUV2 & Vmask)) > trV ) )
             pattern |= flag;
@@ -404,7 +404,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 50:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -422,7 +422,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_20
           PIXEL01_22
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -437,7 +437,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_20
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -451,7 +451,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 10:
         case 138:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -524,7 +524,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 54:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -542,7 +542,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_20
           PIXEL01_22
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -557,7 +557,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_20
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -571,7 +571,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 11:
         case 139:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -587,7 +587,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 19:
         case 51:
         {
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL00_11
             PIXEL01_10
@@ -605,7 +605,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 178:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
             PIXEL11_12
@@ -622,7 +622,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 85:
         {
           PIXEL00_20
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL01_11
             PIXEL11_10
@@ -640,7 +640,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_20
           PIXEL01_22
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL10_12
             PIXEL11_10
@@ -657,7 +657,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_20
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
             PIXEL11_11
@@ -672,7 +672,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 73:
         case 77:
         {
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL00_12
             PIXEL10_10
@@ -689,7 +689,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 42:
         case 170:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
             PIXEL10_11
@@ -706,7 +706,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 14:
         case 142:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
             PIXEL01_12
@@ -787,7 +787,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 26:
         case 31:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -795,7 +795,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_20
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -811,7 +811,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 214:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -820,7 +820,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_20
           }
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -835,7 +835,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_22
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -843,7 +843,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_20
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -856,7 +856,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 74:
         case 107:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -865,7 +865,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_20
           }
           PIXEL01_21
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -878,7 +878,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 27:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -894,7 +894,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 86:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -911,7 +911,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_21
           PIXEL01_22
           PIXEL10_10
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -925,7 +925,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_10
           PIXEL01_21
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -939,7 +939,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 30:
         {
           PIXEL00_10
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -956,7 +956,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_22
           PIXEL01_10
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -970,7 +970,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_22
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -983,7 +983,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 75:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -1094,7 +1094,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 58:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1102,7 +1102,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1117,7 +1117,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 83:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1126,7 +1126,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_70
           }
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1140,7 +1140,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_11
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1148,7 +1148,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1160,7 +1160,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 202:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1169,7 +1169,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_70
           }
           PIXEL01_21
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1182,7 +1182,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 78:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1191,7 +1191,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_70
           }
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1204,7 +1204,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 154:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1212,7 +1212,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1227,7 +1227,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 114:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1236,7 +1236,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_70
           }
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1250,7 +1250,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_22
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1258,7 +1258,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1270,7 +1270,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 90:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1278,7 +1278,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1286,7 +1286,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_70
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1294,7 +1294,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1307,7 +1307,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 55:
         case 23:
         {
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL00_11
             PIXEL01_0
@@ -1325,7 +1325,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 150:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
             PIXEL11_12
@@ -1342,7 +1342,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 212:
         {
           PIXEL00_20
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL01_11
             PIXEL11_0
@@ -1360,7 +1360,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_20
           PIXEL01_22
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL10_12
             PIXEL11_0
@@ -1377,7 +1377,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_20
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
             PIXEL11_11
@@ -1392,7 +1392,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 109:
         case 105:
         {
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL00_12
             PIXEL10_0
@@ -1409,7 +1409,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 171:
         case 43:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
             PIXEL10_11
@@ -1426,7 +1426,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 143:
         case 15:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
             PIXEL01_12
@@ -1444,7 +1444,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_11
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -1457,7 +1457,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 203:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -1473,7 +1473,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 62:
         {
           PIXEL00_10
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -1490,7 +1490,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_11
           PIXEL01_10
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -1503,7 +1503,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 118:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -1520,7 +1520,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_12
           PIXEL01_22
           PIXEL10_10
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -1534,7 +1534,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_10
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -1547,7 +1547,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 155:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -1628,7 +1628,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_11
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1636,7 +1636,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -1648,7 +1648,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 158:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1656,7 +1656,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -1670,7 +1670,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 234:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1679,7 +1679,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_70
           }
           PIXEL01_21
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -1693,7 +1693,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 242:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1702,7 +1702,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_70
           }
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -1714,7 +1714,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 59:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -1722,7 +1722,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_20
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1738,7 +1738,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_22
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -1746,7 +1746,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_20
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1759,7 +1759,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 87:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -1768,7 +1768,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_20
           }
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1780,7 +1780,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 79:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -1789,7 +1789,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_20
           }
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1802,7 +1802,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 122:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1810,7 +1810,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1818,7 +1818,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_70
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -1826,7 +1826,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_20
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1838,7 +1838,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 94:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1846,7 +1846,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -1854,7 +1854,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_20
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1862,7 +1862,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1874,7 +1874,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 218:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1882,7 +1882,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1890,7 +1890,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_70
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1898,7 +1898,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -1910,7 +1910,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 91:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -1918,7 +1918,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_20
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -1926,7 +1926,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_70
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -1934,7 +1934,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -1978,7 +1978,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 186:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -1986,7 +1986,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_70
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -2001,7 +2001,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 115:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -2010,7 +2010,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_70
           }
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -2024,7 +2024,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_11
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -2032,7 +2032,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_70
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -2044,7 +2044,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 206:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -2053,7 +2053,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_70
           }
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -2069,7 +2069,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_20
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_10
           }
@@ -2083,7 +2083,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 174:
         case 46:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_10
           }
@@ -2100,7 +2100,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 147:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_10
           }
@@ -2118,7 +2118,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_20
           PIXEL01_11
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_10
           }
@@ -2147,7 +2147,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 126:
         {
           PIXEL00_10
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2155,7 +2155,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_20
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2168,7 +2168,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 219:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2178,7 +2178,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           }
           PIXEL01_10
           PIXEL10_10
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2190,7 +2190,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 125:
         {
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL00_12
             PIXEL10_0
@@ -2207,7 +2207,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 221:
         {
           PIXEL00_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL01_11
             PIXEL11_0
@@ -2222,7 +2222,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 207:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
             PIXEL01_12
@@ -2240,7 +2240,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_10
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
             PIXEL11_11
@@ -2255,7 +2255,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 190:
         {
           PIXEL00_10
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
             PIXEL11_12
@@ -2270,7 +2270,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 187:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
             PIXEL10_11
@@ -2288,7 +2288,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_11
           PIXEL01_10
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL10_12
             PIXEL11_0
@@ -2302,7 +2302,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 119:
         {
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL00_11
             PIXEL01_0
@@ -2321,7 +2321,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_20
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2335,7 +2335,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 175:
         case 47:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2352,7 +2352,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 151:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2370,7 +2370,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           PIXEL00_20
           PIXEL01_11
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2384,7 +2384,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_10
           PIXEL01_10
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2392,7 +2392,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_20
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2404,7 +2404,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 123:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2413,7 +2413,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_20
           }
           PIXEL01_10
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2426,7 +2426,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 95:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2434,7 +2434,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_20
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2449,7 +2449,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 222:
         {
           PIXEL00_10
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2458,7 +2458,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_20
           }
           PIXEL10_10
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2472,7 +2472,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_21
           PIXEL01_11
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2480,7 +2480,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_20
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2494,7 +2494,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_22
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2502,7 +2502,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_100
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2514,7 +2514,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 235:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2523,7 +2523,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_20
           }
           PIXEL01_21
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2536,7 +2536,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 111:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2545,7 +2545,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_100
           }
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2558,7 +2558,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 63:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2566,7 +2566,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_100
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2580,7 +2580,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 159:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2588,7 +2588,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_20
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2603,7 +2603,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 215:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2612,7 +2612,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_100
           }
           PIXEL10_21
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2625,7 +2625,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 246:
         {
           PIXEL00_22
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2634,7 +2634,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_20
           }
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2647,7 +2647,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 254:
         {
           PIXEL00_10
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2655,7 +2655,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_20
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2663,7 +2663,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_20
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2677,7 +2677,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         {
           PIXEL00_12
           PIXEL01_11
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2685,7 +2685,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_100
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2697,7 +2697,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 251:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2706,7 +2706,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_20
           }
           PIXEL01_10
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2714,7 +2714,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_100
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2726,7 +2726,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 239:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2735,7 +2735,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL00_100
           }
           PIXEL01_12
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2748,7 +2748,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 127:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2756,7 +2756,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_100
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2764,7 +2764,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_20
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2777,7 +2777,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 191:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2785,7 +2785,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_100
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2799,7 +2799,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 223:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2807,7 +2807,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_20
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2816,7 +2816,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_100
           }
           PIXEL10_10
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2829,7 +2829,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         case 247:
         {
           PIXEL00_11
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2838,7 +2838,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
             PIXEL01_100
           }
           PIXEL10_12
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2850,7 +2850,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
         }
         case 255:
         {
-          if (Diff(w[4], w[2]))
+          if(Diff(w[4], w[2]))
           {
             PIXEL00_0
           }
@@ -2858,7 +2858,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL00_100
           }
-          if (Diff(w[2], w[6]))
+          if(Diff(w[2], w[6]))
           {
             PIXEL01_0
           }
@@ -2866,7 +2866,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL01_100
           }
-          if (Diff(w[8], w[4]))
+          if(Diff(w[8], w[4]))
           {
             PIXEL10_0
           }
@@ -2874,7 +2874,7 @@ void hq2x_32( unsigned char * pIn, unsigned char * pOut, int Xres, int Yres, int
           {
             PIXEL10_100
           }
-          if (Diff(w[6], w[8]))
+          if(Diff(w[6], w[8]))
           {
             PIXEL11_0
           }
@@ -2933,8 +2933,8 @@ int main(int argc, char* argv[])
   CImage      ImageOut;
   char      * szFilenameIn;
   char      * szFilenameOut;
-  
-  if (argc <= 2)
+
+  if(argc <= 2)
   {
     printf("\nUsage: hq2x.exe input.bmp output.bmp\n");
     printf("supports .bmp and .tga formats\n");
@@ -2944,21 +2944,21 @@ int main(int argc, char* argv[])
   szFilenameIn = argv[1];
   szFilenameOut = argv[2];
 
-  if ( GetFileAttributes( szFilenameIn ) == -1 )
+  if( GetFileAttributes( szFilenameIn ) == -1 )
   {
     printf( "ERROR: file '%s'\n not found", szFilenameIn );
     return 1;
   }
 
-  if ( ImageIn.Load( szFilenameIn ) != 0 )
+  if( ImageIn.Load( szFilenameIn ) != 0 )
   {
     printf( "ERROR: can't load '%s'\n", szFilenameIn );
     return 1;
   }
 
-  if ( ImageIn.m_BitPerPixel != 16 ) 
+  if( ImageIn.m_BitPerPixel != 16 )
   {
-    if ( ImageIn.ConvertTo16() != 0 )
+    if( ImageIn.ConvertTo16() != 0 )
     {
       printf( "ERROR: '%s' conversion to 16 bit failed\n", szFilenameIn );
       return 1;
@@ -2967,7 +2967,7 @@ int main(int argc, char* argv[])
 
   printf( "\n%s is %ix%ix%i\n", szFilenameIn, ImageIn.m_Xres, ImageIn.m_Yres, ImageIn.m_BitPerPixel );
 
-  if ( ImageOut.Init( ImageIn.m_Xres*2, ImageIn.m_Yres*2, 32 ) != 0 )
+  if( ImageOut.Init( ImageIn.m_Xres*2, ImageIn.m_Yres*2, 32 ) != 0 )
   {
     printf( "ERROR: ImageOut.Init()\n" );
     return 1;
@@ -2978,7 +2978,7 @@ int main(int argc, char* argv[])
   hq2x_32( ImageIn.m_pBitmap, ImageOut.m_pBitmap, ImageIn.m_Xres, ImageIn.m_Yres, ImageOut.m_Xres*4 );
 
   nRes = ImageOut.Save( szFilenameOut );
-  if ( nRes != 0 )
+  if( nRes != 0 )
   {
     printf( "ERROR %i: ImageOut.Save(\"%s\")\n", nRes, szFilenameOut );
     return nRes;

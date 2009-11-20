@@ -42,8 +42,8 @@ static uint32_t Write(SexyAL_device *device, void *data, uint32_t frames)
   int32_t tmp;
 
   tmp=frames;
-  if(tmp>2048) 
-  { 
+  if(tmp>2048)
+  {
    tmp=2048;
    frames-=2048;
   }
@@ -54,7 +54,7 @@ static uint32_t Write(SexyAL_device *device, void *data, uint32_t frames)
   //printf("buffer: %d\n",buffer[0]);
   /* FIXME:  Return the actual number of frame written. It should always equal
              the number of frames requested to be written, except in cases of sound device
-	     failures.  
+             failures.
   */
   #ifdef WIN32
   SexyALI_DSound_RawWrite(device,buffer,FtoB(&device->format,tmp));
@@ -89,7 +89,7 @@ static SexyAL_device *Open(SexyAL *iface, uint64_t id, SexyAL_format *format, Se
  #else
  if(!(ret=SexyALI_OSS_Open(id,format,buffering))) return(0);
  #endif
- 
+
  ret->Write=Write;
  ret->Close=Close;
  ret->CanWrite=CanWrite;

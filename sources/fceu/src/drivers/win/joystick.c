@@ -18,15 +18,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#define MAX_JOYSTICKS   32
+
 #include "common.h"
 #include <dinput.h>
 
 #include "input.h"
 #include "joystick.h"
 
-
-#define MAX_JOYSTICKS   32
-static LPDIRECTINPUTDEVICE7 Joysticks[MAX_JOYSTICKS]={0};
+//static LPDIRECTINPUTDEVICE7 Joysticks[MAX_JOYSTICKS]={0};
+LPDIRECTINPUTDEVICE7 Joysticks[MAX_JOYSTICKS]={0};
 static GUID JoyGUID[MAX_JOYSTICKS];
 
 static int numjoysticks = 0;
@@ -112,7 +113,7 @@ static int JoyAutoRestore(HRESULT dival,LPDIRECTINPUTDEVICE7 lpJJoy)
 /* Call before DTestButtonJoy */
 void UpdateJoysticks(void)
 {
- memset(HavePolled, 0, sizeof(HavePolled));  
+ memset(HavePolled, 0, sizeof(HavePolled));
 }
 
 int DTestButtonJoy(ButtConfig *bc)
@@ -145,11 +146,11 @@ int DTestButtonJoy(ButtConfig *bc)
    IDirectInputDevice7_GetDeviceState(Joysticks[n],sizeof(DIJOYSTATE2),&StatusSave[n]);
    HavePolled[n] = 1;
   }
-  
-  if(bc->ButtonNum[x]&0x8000)	/* Axis "button" */
+
+  if(bc->ButtonNum[x]&0x8000)        /* Axis "button" */
   {
    int sa = bc->ButtonNum[x]&3;
-   long source;
+   long source=0;
 
    if(sa == 0) source=((int64)StatusSave[n].lX - ranges[n].MinX) * 262144 /
                 (ranges[n].MaxX - ranges[n].MinX) - 131072;
@@ -258,7 +259,7 @@ int DoJoyWaitTest(GUID *guid, uint8 *devicenum, uint16 *buttonnum)
     *guid = JoyGUID[n];
     *devicenum = n;
     *buttonnum = 0x8000 | (0) | ((source < 0) ? 0x4000 : 0);
-    memcpy(&StatusSave[n], &JoyStatus, sizeof(DIJOYSTATE2));   
+    memcpy(&StatusSave[n], &JoyStatus, sizeof(DIJOYSTATE2));
     canax[n][0] = 0;
     return(1);
    } else if(abs(source) <= 32768) canax[n][0] = 1;
@@ -287,7 +288,7 @@ int DoJoyWaitTest(GUID *guid, uint8 *devicenum, uint16 *buttonnum)
   }
 
   for(x=0; x<4; x++)
-  {   
+  {
    if(POVFix(JoyStatus.rgdwPOV[x],-1) != FPOV_CENTER && POVFix(StatusSave[n].rgdwPOV[x],-1) == FPOV_CENTER)
    {
     *guid = JoyGUID[n];
@@ -299,7 +300,7 @@ int DoJoyWaitTest(GUID *guid, uint8 *devicenum, uint16 *buttonnum)
   }
   memcpy(&StatusSave[n], &JoyStatus, sizeof(DIJOYSTATE2));
  }
- 
+
  return(0);
 }
 
@@ -323,7 +324,7 @@ int KillJoysticks (void)
   IDirectInputDevice7_Unacquire(Joysticks[x]);
   IDirectInputDevice7_Release(Joysticks[x]);
   Joysticks[x] = NULL;
- } 
+ }
 
  numjoysticks = 0;
 
@@ -342,7 +343,7 @@ static int GetARange(LPDIRECTINPUTDEVICE7 dev, LONG which, LONG *min, LONG *max)
 {
     HRESULT dival;
     DIPROPRANGE diprg;
-    int r;
+//    int r;
 
     memset(&diprg,0,sizeof(DIPROPRANGE));
     diprg.diph.dwSize=sizeof(DIPROPRANGE);
@@ -362,7 +363,7 @@ static int GetARange(LPDIRECTINPUTDEVICE7 dev, LONG which, LONG *min, LONG *max)
 
 static BOOL CALLBACK JoystickFound(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
 {
- HRESULT dival;
+// HRESULT dival;
  int n = numjoysticks;
 
  if(DI_OK != IDirectInput7_CreateDeviceEx(lpDI,&lpddi->guidInstance,&IID_IDirectInputDevice7,(LPVOID *)&Joysticks[n],0))
@@ -371,7 +372,7 @@ static BOOL CALLBACK JoystickFound(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
   return(DIENUM_CONTINUE);
  }
 
- if(DI_OK != IDirectInputDevice7_SetCooperativeLevel(Joysticks[n],*(HWND *)pvRef, DISCL_FOREGROUND|DISCL_NONEXCLUSIVE))
+ if(DI_OK != IDirectInputDevice7_SetCooperativeLevel(Joysticks[n],*(HWND *)pvRef, DISCL_BACKGROUND|DISCL_NONEXCLUSIVE))
  {
   FCEU_printf("Cooperative level set of a joystick failed during init.\n");
   IDirectInputDevice7_Release(Joysticks[n]);
@@ -391,10 +392,7 @@ static BOOL CALLBACK JoystickFound(LPCDIDEVICEINSTANCE lpddi, LPVOID pvRef)
 
  JoyGUID[numjoysticks] = lpddi->guidInstance;
 
- if(DI_OK != IDirectInputDevice7_Acquire(Joysticks[n]))
- {
-  //FCEU_printf("Acquire of a joystick failed during init.\n");  
- }
+ IDirectInputDevice7_Acquire(Joysticks[n]);
 
  numjoysticks++;
 

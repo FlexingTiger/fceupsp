@@ -1,11 +1,13 @@
+#ifdef FCEUDEF_DEBUGGER
 #include "common.h"
 #include "../../x6502.h"
 #include "../../debug.h"
+#include "../../ppuview.h"
 #include "debug.h"
 
 static void DoMemmo(HWND hParent);
 void UpdateDebugger(void);
-static int discallb(uint16 a, char *s);
+//static int discallb(uint16 a, char *s);
 static void crs(HWND hParent);
 static void Disyou(uint16 a);
 static void UpdateDMem(uint16 a);
@@ -123,6 +125,8 @@ static void DoVecties(HWND hParent)
   FCEUI_GetIVectors(&m[2],&m[0],&m[1]);
   for(x=0;x<3;x++)
    SetDlgItemText(hParent,220+x,(LPTSTR)U16ToStr(m[x]));
+
+  SetDlgItemText(hParent,223,(LPTSTR)U16ToStr(timestamp));
 }
 
 static void Redrawsy(X6502 *X)
@@ -130,17 +134,17 @@ static void Redrawsy(X6502 *X)
  SSI(X);
  RFlags(X);
  RRegs(X);
-
  Disyou(X->PC);
-
  DoVecties(dwin);
 }
+
+int BlockingCheck(void);
 
 static void MultiCB(X6502 *X)
 {
  Xsave=X;
  if(instep>=0)
- {  
+ {
   Redrawsy(X);
   if(mwin)
    UpdateDMem(cmsi);
@@ -154,7 +158,7 @@ static void MultiCB(X6502 *X)
    return;
   }
   StopSound();
-  if(!BlockingCheck())		/* Whoops, need to exit for some reason. */
+  if(!BlockingCheck())                /* Whoops, need to exit for some reason. */
   {
    instep=-1;
    FCEUI_SetCPUCallback(0);
@@ -219,17 +223,17 @@ static void FetchBPDef(HWND hwndDlg, uint16 *A1, uint16 *A2, int *type)
  *type|=(IsDlgButtonChecked(hwndDlg,532)==BST_CHECKED)?BPOINT_PC:0;
 }
 
-static void SetBPDef(HWND hwndDlg, int32 A1, int32 A2, int type)
-{
- if(A1>=0)
-  SetDlgItemText(hwndDlg,520,(LPTSTR)U16ToStr(A1));
- if(A2>=0)
-  SetDlgItemText(hwndDlg,521,(LPTSTR)U16ToStr(A2));
- if(type>=0)
- {
- // CheckDlgButton(hwndDlg,123,(soundoptions&SO_SECONDARY)?BST_CHECKED:BST_UNCHECKED);  
- }
-}
+//static void SetBPDef(HWND hwndDlg, int32 A1, int32 A2, int type)
+//{
+// if(A1>=0)
+//  //SetDlgItemText(hwndDlg,520,(LPTSTR)U16ToStr(A1));
+// if(A2>=0)
+//  SetDlgItemText(hwndDlg,521,(LPTSTR)U16ToStr(A2));
+// if(type>=0)
+// {
+ // CheckDlgButton(hwndDlg,123,(soundoptions&SO_SECONDARY)?BST_CHECKED:BST_UNCHECKED);
+// }
+//}
 
 static BOOL CALLBACK DebugCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -311,11 +315,21 @@ static BOOL CALLBACK DebugCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                 switch(HIWORD(wParam))
                 {
                  case LBN_DBLCLK:
-                         if(0==instep)
+//                         if(0==instep)
+//                         {
+//                          Xsave->PC=asavers[SendDlgItemMessage(hwndDlg,100,LB_GETCURSEL,0,0)];
+//                          RRegs(Xsave);
+//                          Disyou(Xsave->PC);
+//                         }
+//                         break;
+                         if((0==instep)&&(LOWORD(wParam)==0x64))
                          {
-                          Xsave->PC=asavers[SendDlgItemMessage(hwndDlg,100,LB_GETCURSEL,0,0)];
-                          RRegs(Xsave);
-                          Disyou(Xsave->PC);
+                            uint16 A1, A2;
+                            int type=BPOINT_READ|BPOINT_PC;
+                            A1=A2=asavers[SendDlgItemMessage(hwndDlg,100,LB_GETCURSEL,0,0)];
+                            FCEUI_AddBreakPoint(type,A1,A2,BPointHandler);
+                            hWndCallB=hwndDlg;  /* Hacky hacky. */
+                            RBPCallBack(type,A1,A2,0);
                          }
                          break;
                  case EN_KILLFOCUS:
@@ -330,7 +344,7 @@ static BOOL CALLBACK DebugCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 
                           switch(id)
                           {
-                           case 200:                                    
+                           case 200:
                                     if(Xsave->PC!=StrToU16(TempArray))
                                     {
                                      Xsave->PC=StrToU16(TempArray);
@@ -378,6 +392,7 @@ static BOOL CALLBACK DebugCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                           case 300:
                            instep=1;
                            crs(hwndDlg);
+                           if((PPUViewer) && (scanline == PPUViewScanline)) UpdatePPUView(1);
                            break;
                           case 301:
                            instep=-1;
@@ -422,14 +437,14 @@ static BOOL CALLBACK DebugCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                 switch(wParam&0xFFFF)
                 {
                  case 1:
-                        gornk:                        
+                        gornk:
                         instep=-1;
                         FCEUI_SetCPUCallback(0);
                         DestroyWindow(dwin);
                         dwin=0;
                         break;
                 }
-              }
+  }
   return 0;
 }
 
@@ -483,6 +498,29 @@ static void UpdateDMem(uint16 a)
  kbuf[0]=0;
  FCEUI_MemDump(a<<4,256,sexycallb);
  SetDlgItemText(mwin,100,kbuf);
+}
+
+int CreateDumpSaveVid(uint32 a1, uint32 a2)
+{
+ const char filter[]="Raw dump(*.chr)\0*.chr\0";
+ char nameo[2048];
+ OPENFILENAME ofn;
+
+ memset(&ofn,0,sizeof(ofn));
+ ofn.lStructSize=sizeof(ofn);
+ ofn.hInstance=fceu_hInstance;
+ ofn.lpstrTitle="Dump Video Memory As...";
+ ofn.lpstrFilter=filter;
+ nameo[0]=0;
+ ofn.lpstrFile=nameo;
+ ofn.nMaxFile=256;
+ ofn.Flags=OFN_EXPLORER|OFN_FILEMUSTEXIST|OFN_HIDEREADONLY;
+ if(GetSaveFileName(&ofn))
+ {
+  FCEUI_DumpVid(nameo,a1,a2);
+  return(1);
+ }
+ return 0;
 }
 
 int CreateDumpSave(uint32 a1, uint32 a2)
@@ -560,7 +598,7 @@ static BOOL CALLBACK MemCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
                            v=StrToU8(TempArray);
                            FCEUI_MemPoke(a,v,LOWORD(wParam)&1);
                            UpdateDMem(cmsi);
-                          
+
                            if(dwin && 0==instep)
                            {
                             int tscroll=32768+SendDlgItemMessage(dwin,101,SBM_GETPOS,0,0);
@@ -579,12 +617,23 @@ static BOOL CALLBACK MemCon(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
                            CreateDumpSave(a1,a2);
                           }
                           break;
+                          case 232:
+                          {
+                           uint16 a1;
+                           uint16 a2;
+                           GetDlgItemText(hwndDlg,230,TempArray,64);
+                           a1=StrToU16(TempArray);
+                           GetDlgItemText(hwndDlg,231,TempArray,64);
+                           a2=StrToU16(TempArray);
+                           CreateDumpSaveVid(a1,a2);
+                          }
+                          break;
                           case 222:
                           {
                            uint16 a;
                            GetDlgItemText(hwndDlg,220,TempArray,64);
                            a=StrToU16(TempArray);
-                           LoadSave(a);                        
+                           LoadSave(a);
                            UpdateDMem(cmsi);
                            if(dwin && 0==instep)
                            {
@@ -701,6 +750,11 @@ void KillDebugger(void)
  if(mwin)
   DestroyWindow(mwin);
  if(dwin)
+ {
+  instep=-1;
+  FCEUI_SetCPUCallback(0);
   DestroyWindow(dwin);
+ }
  dwin=mwin=0;
 }
+#endif

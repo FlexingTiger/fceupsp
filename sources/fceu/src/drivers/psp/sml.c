@@ -149,13 +149,13 @@ int sml_menubox(int x1, int y1, int x2, int y2, char *options, int option_count,
 
 	int need_refresh = 1;
 
+	/* Clear region */
+	sml_drawbox(x1, y1, x2, y2, ' ', ' ', normal_item_text_color, normal_item_back_color, normal_item_text_color, normal_item_back_color);
+
 	/* Menu navigation main loop */
 	for(;;) {
 
 		if(need_refresh) {
-			/* Clear region */
-			sml_drawbox(x1, y1, x2, y2, ' ', ' ', normal_item_text_color, normal_item_back_color, normal_item_text_color, normal_item_back_color);
-
 			/* Show currently viewable items */
 			y = y1;
 

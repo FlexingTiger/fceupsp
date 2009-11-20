@@ -38,7 +38,7 @@ static DECLFW(SUN5BWRAM)
 static DECLFR(SUN5AWRAM)
 {
  if((sungah&0xC0)==0x40)
-  return X.DB; 
+  return X.DB;
  return CartBR(A);
 }
 
@@ -49,10 +49,10 @@ static DECLFW(Mapper69_SWL)
 
 static DECLFW(Mapper69_SWH)
 {
-	     int x;
+             int x;
              GameExpSound.Fill=AYSound;
-	     GameExpSound.HiFill=AYSoundHQ;
-	     if(FSettings.SndRate);
+             GameExpSound.HiFill=AYSoundHQ;
+             if(FSettings.SndRate);
              switch(sunindex)
              {
               case 0:
@@ -65,11 +65,11 @@ static DECLFW(Mapper69_SWH)
               case 5:
               case 10:if(FSettings.soundq>=1) DoAYSQHQ(2); else DoAYSQ(2);break;
               case 7:
-		     for(x=0;x<2;x++)
-  		      if(FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
-		     break;
+                     for(x=0;x<2;x++)
+                        if(FSettings.soundq>=1) DoAYSQHQ(x); else DoAYSQ(x);
+                     break;
              }
-             MapperExRAM[sunindex]=V; 
+             MapperExRAM[sunindex]=V;
 }
 
 static DECLFW(Mapper69_write)
@@ -127,7 +127,7 @@ static void DoAYSQ(int x)
 
     amp+=amp>>1;
 
-    start=CAYBC[x];    
+    start=CAYBC[x];
     end=(SOUNDTS<<16)/soundtsinc;
     if(end<=start) return;
     CAYBC[x]=end;
@@ -140,13 +140,13 @@ static void DoAYSQ(int x)
      vcount[x]-=nesincsize;
      while(vcount[x]<=0)
      {
-      dcount[x]^=1;   
+      dcount[x]^=1;
       vcount[x]+=freq;
      }
     }
 }
 
-static void DoAYSQHQ(int x) 
+static void DoAYSQHQ(int x)
 {
  int32 V;
  int32 freq=((MapperExRAM[x<<1]|((MapperExRAM[(x<<1)+1]&15)<<8))+1)<<4;
@@ -166,7 +166,7 @@ static void DoAYSQHQ(int x)
     dcount[x]^=1;
     vcount[x]=freq;
    }
-  } 
+  }
  }
  CAYBC[x]=SOUNDTS;
 }

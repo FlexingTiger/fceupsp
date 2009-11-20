@@ -10,19 +10,19 @@
 #include <dsound.h>
 #include "../sexyal.h"
 
-typedef struct 
+typedef struct
 {
-	LPDIRECTSOUND ppDS;		/* DirectSound interface object. */
-	LPDIRECTSOUNDBUFFER ppbuf;	/* Primary buffer. */
-	LPDIRECTSOUNDBUFFER ppbufsec;	/* Secondary buffer. */
-	LPDIRECTSOUNDBUFFER ppbufw;	/* Buffer to do writes to. */
-	WAVEFORMATEX wf;		/* Format of the primary and secondary buffers. */
-	long DSBufferSize;		/* The size of the buffer that we can write to, in bytes. */
+        LPDIRECTSOUND ppDS;                /* DirectSound interface object. */
+        LPDIRECTSOUNDBUFFER ppbuf;        /* Primary buffer. */
+        LPDIRECTSOUNDBUFFER ppbufsec;        /* Secondary buffer. */
+        LPDIRECTSOUNDBUFFER ppbufw;        /* Buffer to do writes to. */
+        WAVEFORMATEX wf;                /* Format of the primary and secondary buffers. */
+        long DSBufferSize;                /* The size of the buffer that we can write to, in bytes. */
 
-	long BufHowMuch;		/* How many bytes we should try to buffer. */
-	DWORD ToWritePos;		/* Position which the next write to the buffer
-					   should write to.
-					*/
+        long BufHowMuch;                /* How many bytes we should try to buffer. */
+        DWORD ToWritePos;                /* Position which the next write to the buffer
+                                           should write to.
+                                        */
 } DSFobby;
 
 static void CheckStatus(DSFobby *tmp)
@@ -49,7 +49,7 @@ SexyAL_device *SexyALI_DSound_Open(uint64_t id, SexyAL_format *format, SexyAL_bu
 
  DSBUFFERDESC DSBufferDesc;
  DSCAPS dscaps;
- DSBCAPS dsbcaps;
+// DSBCAPS dsbcaps;
 
  dev=malloc(sizeof(SexyAL_device));
  fobby=malloc(sizeof(DSFobby));
@@ -194,7 +194,7 @@ uint32_t SexyALI_DSound_RawCanWrite(SexyAL_device *device)
 int SexyALI_DSound_RawWrite(SexyAL_device *device, void *data, uint32_t len)
 {
  DSFobby *tmp=device->private;
- uint32_t cw;
+// uint32_t cw;
 
  //printf("Pre: %d\n",SexyALI_DSound_RawCanWrite(device));
  //fflush(stdout);
@@ -210,7 +210,7 @@ int SexyALI_DSound_RawWrite(SexyAL_device *device, void *data, uint32_t len)
   int32_t curlen;
 
   while(!(curlen=SexyALI_DSound_RawCanWrite(device)))
-  {   
+  {
    Sleep(1);
   }
 

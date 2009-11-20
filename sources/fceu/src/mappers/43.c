@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+/*
 #include "mapinc.h"
 
 
@@ -37,6 +37,7 @@ static DECLFW(Mapper43_write)
 static DECLFW(M43Low)
 {
  int transo[8]={4,3,4,4,4,7,5,6};
+// int transo[8]={4,3,2,3,4,7,5,6};
  A&=0xF0FF;
  if(A==0x4022)
   setprg8(0x6000,transo[V&7]);
@@ -73,3 +74,4 @@ void Mapper43_init(void)
  SetReadHandler(0x6000,0xffff,CartBR);
  MapIRQHook=M43Ho;
 }
+*/

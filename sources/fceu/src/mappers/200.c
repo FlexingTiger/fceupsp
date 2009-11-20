@@ -31,6 +31,8 @@ static DECLFW(Mapper200_write)
 
 void Mapper200_init(void)
 {
+  setprg16(0x8000,~0);
+  setprg16(0xC000,~0);
   SetWriteHandler(0x8000,0xffff,Mapper200_write);
 }
 

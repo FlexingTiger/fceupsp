@@ -23,7 +23,7 @@ typedef struct {
         uint16 ButtonNum[MAXBUTTCONFIG];
         uint32 NumC;
         GUID DeviceInstance[MAXBUTTCONFIG];
-	//uint64 DeviceID[MAXBUTTCONFIG];	/* TODO */
+        //uint64 DeviceID[MAXBUTTCONFIG];        /* TODO */
 } ButtConfig;
 
 extern CFGSTRUCT InputConfig[];

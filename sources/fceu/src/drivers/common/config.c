@@ -19,11 +19,11 @@
  */
 
 /****************************************************************/
-/*			FCE Ultra				*/
-/*								*/
-/*	This file contains routines for reading/writing the     */
-/*	configuration file.					*/
-/*								*/
+/*                        FCE Ultra                                */
+/*                                                                */
+/*        This file contains routines for reading/writing the     */
+/*        configuration file.                                        */
+/*                                                                */
 /****************************************************************/
 
 #include <stdio.h>
@@ -40,7 +40,7 @@ static int FReadString(FILE *fp, char *str, int n)
  {
   z=fgetc(fp);
   str[x]=z;
-  x++;  
+  x++;
   if(z<=0) break;
   if(x>=n) return 0;
  }
@@ -58,7 +58,7 @@ static void GetValueR(FILE *fp, char *str, void *v, int c)
   fread(&s,1,4,fp);
   if(!strcmp(str, buf))
   {
-   if(!c)	// String, allocate some memory.
+   if(!c)        // String, allocate some memory.
    {
     if(!(*(char **)v=(char*)malloc(s)))
      goto gogl;
@@ -90,17 +90,17 @@ static void SaveParse(CFGSTRUCT *cfgst, FILE *fp)
 {
         int x=0;
 
-	while(cfgst[x].ptr)
+        while(cfgst[x].ptr)
         {
          if(!cfgst[x].name)     // Link to new config structure
-	 {
-	  SaveParse((CFGSTRUCT*)cfgst[x].ptr,fp);	// Recursion is sexy.  I could
-					// save a little stack space if I made
-					// the file pointer a non-local
-					// variable...
-	  x++;
-	  continue;
-	 }
+         {
+          SaveParse((CFGSTRUCT*)cfgst[x].ptr,fp);        // Recursion is sexy.  I could
+                                        // save a little stack space if I made
+                                        // the file pointer a non-local
+                                        // variable...
+          x++;
+          continue;
+         }
 
          if(cfgst[x].len)               // Plain data
           SetValueR(fp,cfgst[x].name,cfgst[x].ptr,cfgst[x].len);
@@ -114,31 +114,31 @@ static void SaveParse(CFGSTRUCT *cfgst, FILE *fp)
 
 void SaveFCEUConfig(char *filename, CFGSTRUCT *cfgst)
 {
-	FILE *fp;
+        FILE *fp;
 
         fp=fopen(filename,"wb");
         if(fp==NULL) return;
 
-	SaveParse(cfgst,fp);
+        SaveParse(cfgst,fp);
 
-	fclose(fp);
+        fclose(fp);
 }
 
 static void LoadParse(CFGSTRUCT *cfgst, FILE *fp)
 {
-	int x=0;
+        int x=0;
 
-	while(cfgst[x].ptr)
+        while(cfgst[x].ptr)
         {
          if(!cfgst[x].name)     // Link to new config structure
          {
-	  LoadParse((CFGSTRUCT*)cfgst[x].ptr,fp);
-	  x++;
-	  continue;
+          LoadParse((CFGSTRUCT*)cfgst[x].ptr,fp);
+          x++;
+          continue;
          }
          GetValueR(fp,cfgst[x].name,cfgst[x].ptr,cfgst[x].len);
          x++;
-        } 
+        }
 }
 
 void LoadFCEUConfig(char *filename, CFGSTRUCT *cfgst)
@@ -147,6 +147,6 @@ void LoadFCEUConfig(char *filename, CFGSTRUCT *cfgst)
 
         fp=fopen(filename,"rb");
         if(fp==NULL) return;
-	LoadParse(cfgst,fp);
+        LoadParse(cfgst,fp);
         fclose(fp);
 }

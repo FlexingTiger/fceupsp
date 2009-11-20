@@ -58,7 +58,7 @@ DECLFW(Mapper225_write)
  else
   banks=0;
 
-  VROM_BANK8(((A&0x003f)+(banks<<6)));
+ VROM_BANK8(((A&0x003f)+(banks<<6)));
  if(A&0x1000)
   {
    if(A&0x40)

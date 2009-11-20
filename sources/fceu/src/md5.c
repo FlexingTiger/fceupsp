@@ -6,7 +6,7 @@
 
 /* Modified October 3, 2003, to remove testing code, and add
    include of "types.h".
- 
+
    Added simple MD5 to ASCII string conversion function.
    -Xodnizel
 */
@@ -15,16 +15,16 @@
 #include "types.h"
 #include "md5.h"
 
-#define GET_UINT32(n,b,i)                       \
-{                                               \
+#define GET_UINT32(n,b,i)           \
+{                 \
     (n) = ( (uint32) (b)[(i) + 3] << 24 )       \
-        | ( (uint32) (b)[(i) + 2] << 16 )       \
-        | ( (uint32) (b)[(i) + 1] <<  8 )       \
-        | ( (uint32) (b)[(i)    ]       );      \
+  | ( (uint32) (b)[(i) + 2] << 16 )       \
+  | ( (uint32) (b)[(i) + 1] <<  8 )       \
+  | ( (uint32) (b)[(i)    ]       );      \
 }
 
-#define PUT_UINT32(n,b,i)                       \
-{                                               \
+#define PUT_UINT32(n,b,i)           \
+{                 \
     (b)[(i)    ] = (uint8) ( (n)       );       \
     (b)[(i) + 1] = (uint8) ( (n) >>  8 );       \
     (b)[(i) + 2] = (uint8) ( (n) >> 16 );       \
@@ -64,9 +64,9 @@ void md5_process( struct md5_context *ctx, uint8 data[64] )
 
 #define S(x,n) ((x << n) | ((x & 0xFFFFFFFF) >> (32 - n)))
 
-#define P(a,b,c,d,k,s,t)                                \
-{                                                       \
-    a += F(b,c,d) + X[k] + t; a = S(a,s) + b;           \
+#define P(a,b,c,d,k,s,t)        \
+{                   \
+    a += F(b,c,d) + X[k] + t; a = S(a,s) + b;     \
 }
 
     A = ctx->state[0];
@@ -115,7 +115,7 @@ void md5_process( struct md5_context *ctx, uint8 data[64] )
     P( B, C, D, A, 12, 20, 0x8D2A4C8A );
 
 #undef F
-    
+
 #define F(x,y,z) (x ^ y ^ z)
 
     P( A, B, C, D,  5,  4, 0xFFFA3942 );
@@ -181,23 +181,23 @@ void md5_update( struct md5_context *ctx, uint8 *input, uint32 length )
 
     if( left && length >= fill )
     {
-        memcpy( (void *) (ctx->buffer + left), (void *) input, fill );
-        md5_process( ctx, ctx->buffer );
-        length -= fill;
-        input  += fill;
-        left = 0;
+  memcpy( (void *) (ctx->buffer + left), (void *) input, fill );
+  md5_process( ctx, ctx->buffer );
+  length -= fill;
+  input  += fill;
+  left = 0;
     }
 
     while( length >= 64 )
     {
-        md5_process( ctx, input );
-        length -= 64;
-        input  += 64;
+  md5_process( ctx, input );
+  length -= 64;
+  input  += 64;
     }
 
     if( length )
     {
-        memcpy( (void *) (ctx->buffer + left), (void *) input, length );
+  memcpy( (void *) (ctx->buffer + left), (void *) input, length );
     }
 }
 

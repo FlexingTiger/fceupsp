@@ -37,7 +37,7 @@ void FCEU_CheatResetRAM(void)
 {
  int x;
 
- for(x=0;x<64;x++) 
+ for(x=0;x<64;x++)
   CheatRPtrs[x]=0;
 }
 
@@ -52,20 +52,20 @@ void FCEU_CheatAddRAM(int s, uint32 A, uint8 *p)
 
 
 struct CHEATF {
-           struct CHEATF *next;
-           char *name;
-           uint16 addr;
-           uint8 val;
-	   int compare;	/* -1 for no compare. */
-	   int type;	/* 0 for replace, 1 for substitute(GG). */
-	   int status;
+     struct CHEATF *next;
+     char *name;
+     uint16 addr;
+     uint8 val;
+     int compare;  /* -1 for no compare. */
+     int type;  /* 0 for replace, 1 for substitute(GG). */
+     int status;
 };
 
 typedef struct {
-	uint16 addr;
-	uint8 val;
-	int compare;
-	readfunc PrevRead;
+  uint16 addr;
+  uint8 val;
+  int compare;
+  readfunc PrevRead;
 } CHEATF_SUBFAST;
 
 
@@ -97,12 +97,12 @@ static DECLFR(SubCheatsRead)
     if(pv==s->compare)
      return(s->val);
     else return(pv);
-   } 
+   }
    else return(s->val);
   }
   s++;
  } while(--x);
- return(0);	/* We should never get here. */
+ return(0);  /* We should never get here. */
 }
 
 void RebuildSubCheats(void)
@@ -134,12 +134,12 @@ void RebuildSubCheats(void)
    }
   }
   c=c->next;
- } 
+ }
 }
 
 void FCEU_PowerCheats()
 {
- numsubcheats=0;	/* Quick hack to prevent setting of ancient read addresses. */
+ numsubcheats=0;  /* Quick hack to prevent setting of ancient read addresses. */
  RebuildSubCheats();
 }
 
@@ -205,7 +205,7 @@ void FCEU_LoadGameCheats(FILE *override)
  }
 
  while(fgets(linebuf,2048,fp)>0)
- { 
+ {
   char *tbuf=linebuf;
   int doc=0;
 
@@ -224,7 +224,7 @@ void FCEU_LoadGameCheats(FILE *override)
    doc=1;
   }
 
-  if(tbuf[0]==':')    
+  if(tbuf[0]==':')
   {
    tbuf++;
    status=0;
@@ -239,7 +239,7 @@ void FCEU_LoadGameCheats(FILE *override)
    namebuf=malloc(strlen(neo)+1);
    strcpy(namebuf,neo);
   }
-  else 
+  else
   {
    char *neo=&tbuf[4+2+1+1];
    if(sscanf(tbuf,"%04x%*[:]%02x",&addr,&val)!=2)
@@ -273,13 +273,13 @@ void FCEU_FlushGameCheats(FILE *override, int nosave)
   free(CheatComp);
   CheatComp=0;
  }
- if((!savecheats || nosave) && !override)	/* Always save cheats if we're being overridden. */
+ if((!savecheats || nosave) && !override)  /* Always save cheats if we're being overridden. */
  {
   if(cheats)
   {
    struct CHEATF *next=cheats;
    for(;;)
-   {  
+   {
     struct CHEATF *last=next;
     next=next->next;
     free(last->name);
@@ -300,7 +300,7 @@ void FCEU_FlushGameCheats(FILE *override, int nosave)
   {
    struct CHEATF *next=cheats;
    FILE *fp;
-   
+
    if(override)
     fp = override;
    else
@@ -376,19 +376,19 @@ int FCEUI_DelCheat(uint32 which)
 
  for(prev=0,cur=cheats;;)
  {
-  if(x==which)          // Remove this cheat.
+  if(x==which)    // Remove this cheat.
   {
-   if(prev)             // Update pointer to this cheat.
+   if(prev)       // Update pointer to this cheat.
    {
     if(cur->next)       // More cheats.
      prev->next=cur->next;
-    else                // No more.
+    else    // No more.
     {
      prev->next=0;
      cheatsl=prev;      // Set the previous cheat as the last cheat.
     }
    }
-   else                 // This is the first cheat.
+   else     // This is the first cheat.
    {
     if(cur->next)       // More cheats
      cheats=cur->next;
@@ -396,12 +396,12 @@ int FCEUI_DelCheat(uint32 which)
      cheats=cheatsl=0;  // No (more) cheats.
    }
    free(cur->name);     // Now that all references to this cheat are removed,
-   free(cur);           // free the memory.   
+   free(cur);     // free the memory.
    break;
-  }                     // *END REMOVE THIS CHEAT*
+  }         // *END REMOVE THIS CHEAT*
 
 
-  if(!cur->next)        // No more cheats to go through(this shouldn't ever happen...)
+  if(!cur->next)  // No more cheats to go through(this shouldn't ever happen...)
    return(0);
   prev=cur;
   cur=prev->next;
@@ -455,7 +455,7 @@ int FCEUI_GetCheat(uint32 which, char **name, uint32 *a, uint8 *v, int *compare,
    if(name)
     *name=next->name;
    if(a)
-    *a=next->addr; 
+    *a=next->addr;
    if(v)
     *v=next->val;
    if(s)
@@ -507,7 +507,7 @@ int FCEUI_DecodeGG(const char *str, uint16 *a, uint8 *v, int *c)
 
  t=GGtobin(*str++);
  A|=(t&0x07)<<4;
- //if(t&0x08) return(0);	/* 8-character code?! */
+ //if(t&0x08) return(0);  /* 8-character code?! */
 
  t=GGtobin(*str++);
  A|=(t&0x07)<<12;
@@ -537,7 +537,7 @@ int FCEUI_DecodeGG(const char *str, uint16 *a, uint8 *v, int *c)
   t=GGtobin(*str++);
   C|=(t&0x07);
   C|=(t&0x08)<<4;
-  
+
   t=GGtobin(*str++);
   C|=(t&0x07)<<4;
   V|=(t&0x08);
@@ -627,7 +627,7 @@ int FCEUI_ToggleCheat(uint32 which)
 {
  struct CHEATF *next=cheats;
  uint32 x=0;
-   
+
  while(next)
  {
   if(x==which)
@@ -656,7 +656,7 @@ static int InitCheatComp(void)
  }
  for(x=0;x<65536;x++)
   CheatComp[x]=CHEATC_NONE;
- 
+
  return(1);
 }
 
@@ -793,7 +793,7 @@ void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2)
      CheatComp[x]|=CHEATC_EXCLUDED;
    }
  }
- else if(type==1)           // Search for relative change(between values).
+ else if(type==1)     // Search for relative change(between values).
  {
   for(x=0;x<0x10000;x++)
    if(!(CheatComp[x]&CHEATC_NOSHOW))
@@ -806,7 +806,7 @@ void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2)
      CheatComp[x]|=CHEATC_EXCLUDED;
    }
  }
- else if(type==2)                          // Purely relative change.
+ else if(type==2)        // Purely relative change.
  {
   for(x=0x000;x<0x10000;x++)
    if(!(CheatComp[x]&CHEATC_NOSHOW))
@@ -819,7 +819,7 @@ void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2)
      CheatComp[x]|=CHEATC_EXCLUDED;
    }
  }
- else if(type==3)                          // Any change.
+ else if(type==3)        // Any change.
  {
   for(x=0;x<0x10000;x++)
    if(!(CheatComp[x]&CHEATC_NOSHOW))
@@ -832,7 +832,7 @@ void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2)
      CheatComp[x]|=CHEATC_EXCLUDED;
    }
  }
- else if(type==4)                         // Value decreased.
+ else if(type==4)       // Value decreased.
  {
   for(x=0;x<0x10000;x++)
    if(!(CheatComp[x]&CHEATC_NOSHOW))
@@ -841,7 +841,7 @@ void FCEUI_CheatSearchEnd(int type, uint8 v1, uint8 v2)
      CheatComp[x]|=CHEATC_EXCLUDED;
    }
  }
- else if(type==5)                         // Value increased.
+ else if(type==5)       // Value increased.
  {
   for(x=0;x<0x10000;x++)
    if(!(CheatComp[x]&CHEATC_NOSHOW))

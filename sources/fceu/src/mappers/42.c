@@ -23,8 +23,10 @@
 
 static DECLFW(Mapper42_write)
 {
+// FCEU_printf("%04x:%04x\n",A,V);
  switch(A&0xe003)
  {
+  case 0x8000:VROM_BANK8(V);break;
   case 0xe000:mapbyte1[0]=V;ROM_BANK8(0x6000,V&0xF);break;
   case 0xe001:MIRROR_SET((V>>3)&1);break;
   case 0xe002:IRQa=V&2;if(!IRQa) IRQCount=0;X6502_IRQEnd(FCEU_IQEXT);break;
@@ -35,12 +37,12 @@ static void FP_FASTAPASS(1) Mapper42IRQ(int a)
 {
  if(IRQa)
  {
-	IRQCount+=a;	
-	if(IRQCount>=32768) IRQCount-=32768;
+        IRQCount+=a;
+        if(IRQCount>=32768) IRQCount-=32768;
         if(IRQCount>=24576)
-	 X6502_IRQBegin(FCEU_IQEXT);
-	else
-	 X6502_IRQEnd(FCEU_IQEXT);
+         X6502_IRQBegin(FCEU_IQEXT);
+        else
+         X6502_IRQEnd(FCEU_IQEXT);
  }
 }
 

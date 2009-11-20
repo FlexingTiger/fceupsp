@@ -24,8 +24,8 @@
 
 static DECLFW(Mapper73_write)
 {
- //if(A>=0xd000 && A<=0xdfff) 
-  X6502_IRQEnd(FCEU_IQEXT);	/* How are IRQs acknowledged on this chip? */
+ //if(A>=0xd000 && A<=0xdfff)
+  X6502_IRQEnd(FCEU_IQEXT);        /* How are IRQs acknowledged on this chip? */
  switch(A&0xF000)
  {
   //default: printf("$%04x:$%02x\n",A,V);break;

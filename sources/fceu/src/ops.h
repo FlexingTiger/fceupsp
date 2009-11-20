@@ -19,144 +19,144 @@
  */
 
 case 0x00:  /* BRK */
-            _PC++;
-            PUSH(_PC>>8);
-            PUSH(_PC);
-            PUSH(_P|U_FLAG|B_FLAG);
-	    _P|=I_FLAG;
-	    _PI|=I_FLAG;
-            _PC=RdMem(0xFFFE);
-            _PC|=RdMem(0xFFFF)<<8;
-            break;
+      _PC++;
+      PUSH(_PC>>8);
+      PUSH(_PC);
+      PUSH(_P|U_FLAG|B_FLAG);
+      _P|=I_FLAG;
+      _PI|=I_FLAG;
+      _PC=RdMem(0xFFFE);
+      _PC|=RdMem(0xFFFF)<<8;
+      break;
 
 case 0x40:  /* RTI */
-            _P=POP();
-	    /* _PI=_P; This is probably incorrect, so it's commented out. */
-	    _PI = _P;
-            _PC=POP();
-            _PC|=POP()<<8;
-            break;
-            
+      _P=POP();
+      /* _PI=_P; This is probably incorrect, so it's commented out. */
+      _PI = _P;
+      _PC=POP();
+      _PC|=POP()<<8;
+      break;
+
 case 0x60:  /* RTS */
-            _PC=POP();
-            _PC|=POP()<<8;
-            _PC++;
-            break;
+      _PC=POP();
+      _PC|=POP()<<8;
+      _PC++;
+      break;
 
 case 0x48: /* PHA */
-           PUSH(_A);
-           break;
+     PUSH(_A);
+     break;
 case 0x08: /* PHP */
-           PUSH(_P|U_FLAG|B_FLAG);
-           break;
+     PUSH(_P|U_FLAG|B_FLAG);
+     break;
 case 0x68: /* PLA */
-           _A=POP();
-           X_ZN(_A);
-           break;
+     _A=POP();
+     X_ZN(_A);
+     break;
 case 0x28: /* PLP */
-           _P=POP();
-           break;
+     _P=POP();
+     break;
 case 0x4C:
-	  {
-	   uint16 ptmp=_PC;
-	   unsigned int npc;
+    {
+     uint16 ptmp=_PC;
+     unsigned int npc;
 
-	   npc=RdMem(ptmp);
-	   ptmp++;
-	   npc|=RdMem(ptmp)<<8;
-	   _PC=npc;
-	  }
-	  break; /* JMP ABSOLUTE */
-case 0x6C: 
-	   {
-	    uint32 tmp;
-	    GetAB(tmp);
-	    _PC=RdMem(tmp);
-	    _PC|=RdMem( ((tmp+1)&0x00FF) | (tmp&0xFF00))<<8;
-	   }
-	   break;
+     npc=RdMem(ptmp);
+     ptmp++;
+     npc|=RdMem(ptmp)<<8;
+     _PC=npc;
+    }
+    break; /* JMP ABSOLUTE */
+case 0x6C:
+     {
+      uint32 tmp;
+      GetAB(tmp);
+      _PC=RdMem(tmp);
+      _PC|=RdMem( ((tmp+1)&0x00FF) | (tmp&0xFF00))<<8;
+     }
+     break;
 case 0x20: /* JSR */
-	   {
-	    uint8 npc;
-	    npc=RdMem(_PC);
-	    _PC++;
-            PUSH(_PC>>8);
-            PUSH(_PC);
-            _PC=RdMem(_PC)<<8;
-	    _PC|=npc;
-	   }
-           break;
+     {
+      uint8 npc;
+      npc=RdMem(_PC);
+      _PC++;
+      PUSH(_PC>>8);
+      PUSH(_PC);
+      _PC=RdMem(_PC)<<8;
+      _PC|=npc;
+     }
+     break;
 
 case 0xAA: /* TAX */
-           _X=_A;
-           X_ZN(_A);
-           break;
+     _X=_A;
+     X_ZN(_A);
+     break;
 
 case 0x8A: /* TXA */
-           _A=_X;
-           X_ZN(_A);
-           break;
+     _A=_X;
+     X_ZN(_A);
+     break;
 
 case 0xA8: /* TAY */
-           _Y=_A;
-           X_ZN(_A);
-           break;
+     _Y=_A;
+     X_ZN(_A);
+     break;
 case 0x98: /* TYA */
-           _A=_Y;
-           X_ZN(_A);
-           break;
+     _A=_Y;
+     X_ZN(_A);
+     break;
 
 case 0xBA: /* TSX */
-           _X=_S;
-           X_ZN(_X);
-           break;
+     _X=_S;
+     X_ZN(_X);
+     break;
 case 0x9A: /* TXS */
-           _S=_X;
-           break;
+     _S=_X;
+     break;
 
 case 0xCA: /* DEX */
-           _X--;
-           X_ZN(_X);
-           break;
+     _X--;
+     X_ZN(_X);
+     break;
 case 0x88: /* DEY */
-           _Y--;
-           X_ZN(_Y);
-           break;
+     _Y--;
+     X_ZN(_Y);
+     break;
 
 case 0xE8: /* INX */
-           _X++;
-           X_ZN(_X);
-           break;
+     _X++;
+     X_ZN(_X);
+     break;
 case 0xC8: /* INY */
-           _Y++;
-           X_ZN(_Y);
-           break;
+     _Y++;
+     X_ZN(_Y);
+     break;
 
 case 0x18: /* CLC */
-           _P&=~C_FLAG;
-           break;
+     _P&=~C_FLAG;
+     break;
 case 0xD8: /* CLD */
-           _P&=~D_FLAG;
-           break;
+     _P&=~D_FLAG;
+     break;
 case 0x58: /* CLI */
-           _P&=~I_FLAG;
-           break;
+     _P&=~I_FLAG;
+     break;
 case 0xB8: /* CLV */
-           _P&=~V_FLAG;
-           break;
+     _P&=~V_FLAG;
+     break;
 
 case 0x38: /* SEC */
-           _P|=C_FLAG;
-           break;
+     _P|=C_FLAG;
+     break;
 case 0xF8: /* SED */
-           _P|=D_FLAG;
-           break;
+     _P|=D_FLAG;
+     break;
 case 0x78: /* SEI */
-           _P|=I_FLAG;
-           break;
+     _P|=I_FLAG;
+     break;
 
 case 0xEA: /* NOP */
-           break;
+     break;
 
 case 0x0A: RMW_A(ASL);
 case 0x06: RMW_ZP(ASL);
@@ -269,7 +269,7 @@ case 0x19: LD_ABY(ORA);
 case 0x01: LD_IX(ORA);
 case 0x11: LD_IY(ORA);
 
-case 0xEB:	/* (undocumented) */
+case 0xEB:  /* (undocumented) */
 case 0xE9: LD_IM(SBC);
 case 0xE5: LD_ZP(SBC);
 case 0xF5: LD_ZPX(SBC);
@@ -336,36 +336,36 @@ case 0x8F: ST_AB(_A&_X);
 case 0x83: ST_IX(_A&_X);
 
 /* ARR - ARGH, MATEY! */
-case 0x6B: { 
-	     uint8 arrtmp; 
-	     LD_IM(AND;_P&=~V_FLAG;_P|=(_A^(_A>>1))&0x40;arrtmp=_A>>7;_A>>=1;_A|=(_P&C_FLAG)<<7;_P&=~C_FLAG;_P|=arrtmp;X_ZN(_A));
-	   }
+case 0x6B: {
+       uint8 arrtmp;
+       LD_IM(AND;_P&=~V_FLAG;_P|=(_A^(_A>>1))&0x40;arrtmp=_A>>7;_A>>=1;_A|=(_P&C_FLAG)<<7;_P&=~C_FLAG;_P|=arrtmp;X_ZN(_A));
+     }
 /* ASR */
 case 0x4B: LD_IM(AND;LSRA);
 
 /* ATX(OAL) Is this(OR with $EE) correct? */
 case 0xAB: LD_IM(_A|=0xEE;AND;_X=_A);
 
-/* AXS */ 
+/* AXS */
 case 0xCB: LD_IM(AXS);
 
 /* DCP */
-case 0xC7: LD_ZP(DEC;CMP);
-case 0xD7: LD_ZPX(DEC;CMP);
-case 0xCF: LD_AB(DEC;CMP);
-case 0xDF: LD_ABX(DEC;CMP);
-case 0xDB: LD_ABY(DEC;CMP);
-case 0xC3: LD_IX(DEC;CMP);
-case 0xD3: LD_IY(DEC;CMP);
+case 0xC7: RMW_ZP(DEC;CMP);
+case 0xD7: RMW_ZPX(DEC;CMP);
+case 0xCF: RMW_AB(DEC;CMP);
+case 0xDF: RMW_ABX(DEC;CMP);
+case 0xDB: RMW_ABY(DEC;CMP);
+case 0xC3: RMW_IX(DEC;CMP);
+case 0xD3: RMW_IY(DEC;CMP);
 
-/* ISC */
-case 0xE7: LD_ZP(INC;SBC);
-case 0xF7: LD_ZPX(INC;SBC);
-case 0xEF: LD_AB(INC;SBC);
-case 0xFF: LD_ABX(INC;SBC);
-case 0xFB: LD_ABY(INC;SBC);
-case 0xE3: LD_IX(INC;SBC);
-case 0xF3: LD_IY(INC;SBC);
+/* ISB */
+case 0xE7: RMW_ZP(INC;SBC);
+case 0xF7: RMW_ZPX(INC;SBC);
+case 0xEF: RMW_AB(INC;SBC);
+case 0xFF: RMW_ABX(INC;SBC);
+case 0xFB: RMW_ABY(INC;SBC);
+case 0xE3: RMW_IX(INC;SBC);
+case 0xF3: RMW_IY(INC;SBC);
 
 /* DOP */
 
@@ -399,9 +399,9 @@ case 0x92:
 case 0xB2:
 case 0xD2:
 case 0xF2:ADDCYC(0xFF);
-          _jammed=1;
-	  _PC--;
-	  break;
+    _jammed=1;
+    _PC--;
+    break;
 
 /* LAR */
 case 0xBB: RMW_ABY(_S&=x;_A=_X=_S;X_ZN(_X));
@@ -473,11 +473,11 @@ case 0x9B: _S=_A&_X;ST_ABY(_S& (((A-_Y)>>8)+1) );
 
 /* TOP */
 case 0x0C: LD_AB(;);
-case 0x1C: 
-case 0x3C: 
-case 0x5C: 
-case 0x7C: 
-case 0xDC: 
+case 0x1C:
+case 0x3C:
+case 0x5C:
+case 0x7C:
+case 0xDC:
 case 0xFC: LD_ABX(;);
 
 /* XAA - BIG QUESTION MARK HERE */

@@ -40,9 +40,9 @@ extern writefunc BWrite[0x10000];
 extern void (*GameInterface)(int h);
 extern void (*GameStateRestore)(int version);
 
-#define GI_RESETM2	1
-#define GI_POWER	2
-#define GI_CLOSE	3
+#define GI_RESETM2  1
+#define GI_POWER  2
+#define GI_CLOSE  3
 
 #include "git.h"
 extern FCEUGI *FCEUGameInfo;
@@ -53,24 +53,24 @@ extern uint8 PAL;
 #include "driver.h"
 
 typedef struct {
-           int PAL;
-           int NetworkPlay;
-	   int SoundVolume;
-           int GameGenie;
+     int PAL;
+     int NetworkPlay;
+     int SoundVolume;
+     int GameGenie;
 
-	   /* Current first and last rendered scanlines. */
-	   int FirstSLine;
-	   int LastSLine;
+     /* Current first and last rendered scanlines. */
+     int FirstSLine;
+     int LastSLine;
 
-	   /* Driver code(user)-specified first and last rendered scanlines. 
-	      Usr*SLine[0] is for NTSC, Usr*SLine[1] is for PAL.
-           */
-	   int UsrFirstSLine[2];
-	   int UsrLastSLine[2];
-	   int SnapName;
-	   uint32 SndRate;
-	   int soundq;
-	   int lowpass;
+     /* Driver code(user)-specified first and last rendered scanlines.
+        Usr*SLine[0] is for NTSC, Usr*SLine[1] is for PAL.
+     */
+     int UsrFirstSLine[2];
+     int UsrLastSLine[2];
+     int SnapName;
+     uint32 SndRate;
+     int soundq;
+     int lowpass;
 } FCEUS;
 
 extern FCEUS FSettings;
@@ -95,8 +95,8 @@ extern uint8 vsdip;
 #define JOY_SELECT      4
 #define JOY_START       8
 #define JOY_UP  0x10
-#define JOY_DOWN        0x20
-#define JOY_LEFT        0x40
+#define JOY_DOWN  0x20
+#define JOY_LEFT  0x40
 #define JOY_RIGHT       0x80
 #else
 #define _FCEUH

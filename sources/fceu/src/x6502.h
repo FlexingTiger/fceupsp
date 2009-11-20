@@ -22,13 +22,18 @@
 
 #include "x6502struct.h"
 
+#ifdef FCEUDEF_DEBUGGER
 void X6502_Debug(void (*CPUHook)(X6502 *),
-                uint8 (*ReadHook)(X6502 *, unsigned int),
-                void (*WriteHook)(X6502 *, unsigned int, uint8));
+    uint8 (*ReadHook)(X6502 *, unsigned int),
+    void (*WriteHook)(X6502 *, unsigned int, uint8));
+
+extern void (*X6502_Run)(int32 cycles);
+#else
+void X6502_Run(int32 cycles);
+#endif
 
 extern uint32 timestamp;
 extern X6502 X;
-extern void (*X6502_Run)(int32 cycles);
 
 #define N_FLAG  0x80
 #define V_FLAG  0x40
@@ -48,8 +53,8 @@ extern void FP_FASTAPASS(1) (*MapIRQHook)(int a);
 #define FCEU_IQEXT2     0x002
 /* ... */
 #define FCEU_IQRESET    0x020
-#define FCEU_IQNMI2	0x040	// Delayed NMI, gets converted to *_IQNMI
-#define FCEU_IQNMI	0x080
+#define FCEU_IQNMI2  0x040  // Delayed NMI, gets converted to *_IQNMI
+#define FCEU_IQNMI  0x080
 #define FCEU_IQDPCM     0x100
 #define FCEU_IQFCOUNT   0x200
 #define FCEU_IQTEMP     0x800

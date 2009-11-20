@@ -25,6 +25,8 @@
 #include "keyboard.h"
 #include "joystick.h"
 
+#define MAX_EXTENSIONS 7
+
 LPDIRECTINPUT7 lpDI;
 
 /* UsrInputType[] is user-specified.  InputType[] is current
@@ -34,7 +36,7 @@ LPDIRECTINPUT7 lpDI;
 int UsrInputType[3]={SI_GAMEPAD,SI_GAMEPAD,SIFC_NONE};
 int InputType[3];
 static int cspec;
-   
+
 int gametype;
 
 int InitDInput(void)
@@ -58,8 +60,12 @@ void InputScreenChanged(int fs)
  if(GI)
  {
   for(x=0;x<2;x++)
+  {
    if(InputType[x]==SI_ZAPPER)
     FCEUI_SetInput(x,SI_ZAPPER,MouseData,fs);
+   if(InputType[x]==SI_MOUSE)
+    FCEUI_SetInput(x,SI_MOUSE,MouseData,fs);
+  }
   if(InputType[2]==SIFC_SHADOW)
    FCEUI_SetInputFC(SIFC_SHADOW,MouseData,fs);
  }
@@ -74,11 +80,11 @@ void InputUserActiveFix(void)
 }
 
 void ParseGIInput(FCEUGI *gi)
-{ 
+{
  InputType[0]=UsrInputType[0];
  InputType[1]=UsrInputType[1];
  InputType[2]=UsrInputType[2];
- 
+
  if(gi)
  {
   if(gi->input[0]>=0)
@@ -105,6 +111,7 @@ static uint8 TopRiderData;
 static uint8 BWorldData[1+13+1];
 
 static void UpdateFKB(void);
+static void UpdateSuborKB(void);
 static void UpdateGamepad(void);
 static void UpdateQuizKing(void);
 static void UpdateHyperShot(void);
@@ -126,7 +133,7 @@ static int _keyonly(int a)
 {
  if(keys[a])
  {
-  if(!keyonce[a]) 
+  if(!keyonce[a])
   {
    keyonce[a]=1;
    return(1);
@@ -145,9 +152,9 @@ static void KeyboardCommands(void)
 {
   int is_shift, is_alt;
 
-  keys=GetKeyboard(); 
+  keys=GetKeyboard();
 
-  if(InputType[2]==SIFC_FKB)
+  if((InputType[2]==SIFC_FKB)||(InputType[2]==SIFC_SUBORKB))
   {
    if(cidisabled) return;
   }
@@ -179,14 +186,14 @@ static void KeyboardCommands(void)
   if(keyonly(F9)) FCEUI_SaveSnapshot();
   if(gametype!=GIT_NSF)
   {
-   if(keyonly(F5)) 
+   if(keyonly(F5))
    {
     if(is_shift)
      FCEUI_SaveMovie(NULL);
     else
      FCEUI_SaveState(NULL);
    }
-   if(keyonly(F7)) 
+   if(keyonly(F7))
    {
     if(is_shift)
      FCEUI_LoadMovie(NULL);
@@ -195,25 +202,25 @@ static void KeyboardCommands(void)
    }
   }
 
-  if(keyonly(F1)) FCEUI_ToggleTileView();
+//  if(keyonly(F1)) FCEUI_ToggleTileView();
 
   if(gametype==GIT_VSUNI)
   {
-	if(keyonly(F8)) FCEUI_VSUniCoin();
-	if(keyonly(F6))
+        if(keyonly(F8)) FCEUI_VSUniCoin();
+        if(keyonly(F6))
         {
-	 DIPS^=1;
-	 FCEUI_VSUniToggleDIPView();
-	}
-	if(!(DIPS&1)) goto DIPSless;
-	if(keyonly(1)) FCEUI_VSUniToggleDIP(0);
-	if(keyonly(2)) FCEUI_VSUniToggleDIP(1);
-	if(keyonly(3)) FCEUI_VSUniToggleDIP(2);
-	if(keyonly(4)) FCEUI_VSUniToggleDIP(3);
-	if(keyonly(5)) FCEUI_VSUniToggleDIP(4);
-	if(keyonly(6)) FCEUI_VSUniToggleDIP(5);
-	if(keyonly(7)) FCEUI_VSUniToggleDIP(6);
-	if(keyonly(8)) FCEUI_VSUniToggleDIP(7);
+         DIPS^=1;
+         FCEUI_VSUniToggleDIPView();
+        }
+        if(!(DIPS&1)) goto DIPSless;
+        if(keyonly(1)) FCEUI_VSUniToggleDIP(0);
+        if(keyonly(2)) FCEUI_VSUniToggleDIP(1);
+        if(keyonly(3)) FCEUI_VSUniToggleDIP(2);
+        if(keyonly(4)) FCEUI_VSUniToggleDIP(3);
+        if(keyonly(5)) FCEUI_VSUniToggleDIP(4);
+        if(keyonly(6)) FCEUI_VSUniToggleDIP(5);
+        if(keyonly(7)) FCEUI_VSUniToggleDIP(6);
+        if(keyonly(8)) FCEUI_VSUniToggleDIP(7);
   }
   else
   {
@@ -228,7 +235,7 @@ static void KeyboardCommands(void)
 
    if((InputType[2] == SIFC_BWORLD) || (cspec == SIS_DATACH))
    {
-    if(keyonly(F8)) 
+    if(keyonly(F8))
     {
      barcoder ^= 1;
      if(!barcoder)
@@ -241,17 +248,17 @@ static void KeyboardCommands(void)
       else
        FCEUI_DatachSet(bbuf);
       FCEUI_DispMessage("Barcode Entered");
-     } 
+     }
      else { bbuft = 0; FCEUI_DispMessage("Enter Barcode");}
     }
    } else barcoder = 0;
 
-	#define SSM(x)		\
-	{ if(barcoder) { if(bbuft < 13) {bbuf[bbuft++] = '0' + x; bbuf[bbuft] = 0;} FCEUI_DispMessage("Barcode: %s",bbuf);}	\
-	else { 			\
-	 if(is_shift) FCEUI_SelectMovie(x); 	\
-	 else FCEUI_SelectState(x); 	\
-	} }
+        #define SSM(x)                \
+        { if(barcoder) { if(bbuft < 13) {bbuf[bbuft++] = '0' + x; bbuf[bbuft] = 0;} FCEUI_DispMessage("Barcode: %s",bbuf);}        \
+        else {                         \
+         if(is_shift) FCEUI_SelectMovie(x);         \
+         else FCEUI_SelectState(x);         \
+        } }
 
    DIPSless:
    if(keyonly(0)) SSM(0);
@@ -269,7 +276,8 @@ static void KeyboardCommands(void)
 }
 
 #define MK(x)   {{BUTTC_KEYBOARD},{0},{MKK(x)},1}
-#define MK2(x1,x2)	{{BUTTC_KEYBOARD},{0},{MKK(x1),MKK(x2)},2}
+#define MC(x)   {{BUTTC_KEYBOARD},{0},{x},1}
+#define MK2(x1,x2)        {{BUTTC_KEYBOARD},{0},{MKK(x1),MKK(x2)},2}
 
 #define MKZ()   {{0},{0},{0},0}
 
@@ -277,17 +285,17 @@ static void KeyboardCommands(void)
 
 ButtConfig GamePadConfig[4][10]={
         /* Gamepad 1 */
-        { 
+        {
          MK(LEFTALT), MK(LEFTCONTROL), MK(TAB), MK(ENTER), MK(BL_CURSORUP),
           MK(BL_CURSORDOWN),MK(BL_CURSORLEFT),MK(BL_CURSORRIGHT)
-	},
+        },
 
         /* Gamepad 2 */
         GPZ(),
 
         /* Gamepad 3 */
         GPZ(),
-  
+
         /* Gamepad 4 */
         GPZ()
 };
@@ -314,8 +322,8 @@ static void UpdateGamepad(void)
       JS|=(1<<x)<<(wg<<3);
   }
 
-  for(x=0;x<32;x+=8)	/* Now, test to see if anything weird(up+down at same time)
-			   is happening, and correct */
+  for(x=0;x<32;x+=8)        /* Now, test to see if anything weird(up+down at same time)
+                           is happening, and correct */
   {
    if((JS & (0xC0<<x) ) == (0xC0<<x) ) JS&=~(0xC0<<x);
    if((JS & (0x30<<x) ) == (0x30<<x) ) JS&=~(0x30<<x);
@@ -330,7 +338,7 @@ ButtConfig powerpadsc[2][12]={
                                MK(BRACKET_RIGHT),
 
                                MK(K),MK(L),MK(SEMICOLON),
-				MK(APOSTROPHE),
+                                MK(APOSTROPHE),
                                MK(M),MK(COMMA),MK(PERIOD),MK(SLASH)
                               },
                               {
@@ -357,6 +365,7 @@ static uint32 UpdatePPadData(int w)
 
 
 static uint8 fkbkeys[0x48];
+static uint8 suborkbkeys[0x60];
 
 void FCEUD_UpdateInput(void)
 {
@@ -374,6 +383,7 @@ void FCEUD_UpdateInput(void)
    {
     case SI_GAMEPAD:t|=1;break;
     case SI_ARKANOID:t|=2;break;
+    case SI_MOUSE:t|=2;break;
     case SI_ZAPPER:t|=2;break;
     case SI_POWERPADA:
     case SI_POWERPADB:powerpadbuf[x]=UpdatePPadData(x);break;
@@ -384,6 +394,7 @@ void FCEUD_UpdateInput(void)
    case SIFC_ARKANOID:t|=2;break;
    case SIFC_SHADOW:t|=2;break;
    case SIFC_FKB:if(cidisabled) UpdateFKB();break;
+   case SIFC_SUBORKB:if(cidisabled) UpdateSuborKB();break;
    case SIFC_HYPERSHOT: UpdateHyperShot();break;
    case SIFC_MAHJONG: UpdateMahjong();break;
    case SIFC_QUIZKING: UpdateQuizKing();break;
@@ -417,8 +428,9 @@ void InitOtherInput(void)
     {
      case SI_POWERPADA:
      case SI_POWERPADB:InputDPtr=&powerpadbuf[x];break;
-     case SI_GAMEPAD:InputDPtr=&JSreturn;break;     
+     case SI_GAMEPAD:InputDPtr=&JSreturn;break;
      case SI_ARKANOID:InputDPtr=MouseData;t|=1;break;
+     case SI_MOUSE:InputDPtr=MouseData;t|=1;break;
      case SI_ZAPPER:InputDPtr=MouseData;
                                 t|=1;
                                 attrib=screenmode;
@@ -435,6 +447,7 @@ void InitOtherInput(void)
     case SIFC_OEKAKIDS:InputDPtr=MouseData;t|=1;attrib=screenmode;break;
     case SIFC_ARKANOID:InputDPtr=MouseData;t|=1;break;
     case SIFC_FKB:InputDPtr=fkbkeys;break;
+    case SIFC_SUBORKB:InputDPtr=suborkbkeys;break;
     case SIFC_HYPERSHOT:InputDPtr=&HyperShotData;break;
     case SIFC_MAHJONG:InputDPtr=&MahjongData;break;
     case SIFC_QUIZKING:InputDPtr=&QuizKingData;break;
@@ -465,6 +478,21 @@ ButtConfig fkbmap[0x48]=
  MK(BL_CURSORUP),MK(BL_CURSORLEFT),MK(BL_CURSORRIGHT),MK(BL_CURSORDOWN)
 };
 
+ButtConfig suborkbmap[0x60]=
+{
+ MC(0x01),MC(0x3b),MC(0x3c),MC(0x3d),MC(0x3e),MC(0x3f),MC(0x40),MC(0x41),MC(0x42),MC(0x43),
+ MC(0x44),MC(0x57),MC(0x58),MC(0x45),MC(0x29),MC(0x02),MC(0x03),MC(0x04),MC(0x05),MC(0x06),
+ MC(0x07),MC(0x08),MC(0x09),MC(0x0a),MC(0x0b),MC(0x0c),MC(0x0d),MC(0x0e),MC(0xd2),MC(0xc7),
+ MC(0xc9),MC(0xc5),MC(0xb5),MC(0x37),MC(0x4a),MC(0x0f),MC(0x10),MC(0x11),MC(0x12),MC(0x13),
+ MC(0x14),MC(0x15),MC(0x16),MC(0x17),MC(0x18),MC(0x19),MC(0x1a),MC(0x1b),MC(0x1c),MC(0xd3),
+ MC(0xca),MC(0xd1),MC(0x47),MC(0x48),MC(0x49),MC(0x4e),MC(0x3a),MC(0x1e),MC(0x1f),MC(0x20),
+ MC(0x21),MC(0x22),MC(0x23),MC(0x24),MC(0x25),MC(0x26),MC(0x27),MC(0x28),MC(0x4b),MC(0x4c),
+ MC(0x4d),MC(0x2a),MC(0x2c),MC(0x2d),MC(0x2e),MC(0x2f),MC(0x30),MC(0x31),MC(0x32),MC(0x33),
+ MC(0x34),MC(0x35),MC(0x2b),MC(0xc8),MC(0x4f),MC(0x50),MC(0x51),MC(0x1d),MC(0x38),MC(0x39),
+ MC(0xcb),MC(0xd0),MC(0xcd),MC(0x52),MC(0x53)
+};
+
+
 static void UpdateFKB(void)
 {
  int x;
@@ -475,6 +503,19 @@ static void UpdateFKB(void)
 
   if(DTestButton(&fkbmap[x]))
    fkbkeys[x]=1;
+ }
+}
+
+static void UpdateSuborKB(void)
+{
+ int x;
+
+ for(x=0;x<0x60;x++)
+ {
+  suborkbkeys[x]=0;
+
+  if(DTestButton(&suborkbmap[x]))
+   suborkbkeys[x]=1;
  }
 }
 
@@ -505,10 +546,10 @@ static ButtConfig MahjongButtons[21]=
 static void UpdateMahjong(void)
 {
  int x;
-        
+
  MahjongData=0;
  for(x=0;x<21;x++)
- {  
+ {
   if(DTestButton(&MahjongButtons[x]))
    MahjongData|=1<<x;
  }
@@ -579,6 +620,7 @@ CFGSTRUCT InputConfig[]={
         AC(MahjongButtons),
         AC(GamePadConfig),
         AC(fkbmap),
+        AC(suborkbmap),
         ENDCFGSTRUCT
 };
 
@@ -594,11 +636,13 @@ void InitInputStuff(void)
      JoyClearBC(&GamePadConfig[x][y]);
 
    for(x=0; x<2; x++)
-    for(y=0; y<12; y++)    
+    for(y=0; y<12; y++)
      JoyClearBC(&powerpadsc[x][y]);
 
    for(x=0; x<0x48; x++)
     JoyClearBC(&fkbmap[x]);
+   for(x=0; x<0x60; x++)
+    JoyClearBC(&suborkbmap[x]);
 
    for(x=0; x<6; x++)
     JoyClearBC(&QuizKingButtons[x]);
@@ -614,45 +658,42 @@ void InitInputStuff(void)
 
 static void FCExp(char *text)
 {
-        static char *fccortab[11]={"none","arkanoid","shadow","4player","fkb","hypershot",
-                        "mahjong","quizking","ftrainera","ftrainerb","oekakids"};
-           
-        static int fccortabi[11]={SIFC_NONE,SIFC_ARKANOID,SIFC_SHADOW,
-                                 SIFC_4PLAYER,SIFC_FKB,SIFC_HYPERSHOT,SIFC_MAHJONG,SIFC_QUIZKING,
+        static char *fccortab[12]={"none","arkanoid","shadow","4player","fkb","suborkb",
+                    "hypershot","mahjong","quizking","ftrainera","ftrainerb","oekakids"};
+
+        static int fccortabi[12]={SIFC_NONE,SIFC_ARKANOID,SIFC_SHADOW,
+                                 SIFC_4PLAYER,SIFC_FKB,SIFC_SUBORKB,SIFC_HYPERSHOT,SIFC_MAHJONG,SIFC_QUIZKING,
                                  SIFC_FTRAINERA,SIFC_FTRAINERB,SIFC_OEKAKIDS};
-	int y;
-	for(y=0;y<11;y++)
-	 if(!strcmp(fccortab[y],text))
-	  UsrInputType[2]=fccortabi[y];
+        int y;
+        for(y=0;y<12;y++)
+         if(!strcmp(fccortab[y],text))
+          UsrInputType[2]=fccortabi[y];
 }
 
-static char *cortab[6]={"none","gamepad","zapper","powerpada","powerpadb","arkanoid"};
-static int cortabi[6]={SI_NONE,SI_GAMEPAD,
-                               SI_ZAPPER,SI_POWERPADA,SI_POWERPADB,SI_ARKANOID};
+static char *cortab[MAX_EXTENSIONS]={"none","gamepad","zapper","powerpada","powerpadb","arkanoid","mouse"};
+static int cortabi[MAX_EXTENSIONS]={SI_NONE,SI_GAMEPAD,SI_ZAPPER,SI_POWERPADA,SI_POWERPADB,SI_ARKANOID,SI_MOUSE};
 
 static void Input1(char *text)
 {
-	int y;
-
-	for(y=0;y<6;y++)
-	 if(!strcmp(cortab[y],text))
-	  UsrInputType[0]=cortabi[y];
+        int y;
+        for(y=0;y<MAX_EXTENSIONS-1;y++)
+         if(!strcmp(cortab[y],text))
+          UsrInputType[0]=cortabi[y];
 }
 
 static void Input2(char *text)
 {
-	int y;
-
-	for(y=0;y<6;y++)
-	 if(!strcmp(cortab[y],text))
-	  UsrInputType[1]=cortabi[y];
+        int y;
+        for(y=0;y<MAX_EXTENSIONS;y++)
+         if(!strcmp(cortab[y],text))
+          UsrInputType[1]=cortabi[y];
 }
 
 ARGPSTRUCT InputArgs[]={
-	{"-fcexp",0,(void *)FCExp,0x2000},
-	{"-input1",0,(void *)Input1,0x2000},
-	{"-input2",0,(void *)Input2,0x2000},
-	{0,0,0,0}
+        {"-fcexp",0,(void *)FCExp,0x2000},
+        {"-input1",0,(void *)Input1,0x2000},
+        {"-input2",0,(void *)Input2,0x2000},
+        {0,0,0,0}
 };
 
 int DTestButton(ButtConfig *bc)
@@ -689,7 +730,9 @@ static char *MakeButtString(ButtConfig *bc)
   {
    strcat(tmpstr,"KB: ");
    if(!GetKeyNameText(bc->ButtonNum[x]<<16,tmpstr+strlen(tmpstr),16))
-    sprintf(tmpstr+strlen(tmpstr),"%03d",bc->ButtonNum[x]);
+    sprintf(tmpstr+strlen(tmpstr),"%02X",bc->ButtonNum[x]);
+   else
+    sprintf(tmpstr+strlen(tmpstr)," (%02X)",bc->ButtonNum[x]);
   }
   else if(bc->ButtType[x] == BUTTC_JOYSTICK)
   {
@@ -730,7 +773,7 @@ static BOOL CALLBACK DWBCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 
   switch(uMsg) {
    case WM_DESTROY:
-                   die = NULL;                         
+                   die = NULL;
                    return(0);
    case WM_TIMER:
                 {
@@ -758,7 +801,7 @@ static BOOL CALLBACK DWBCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 
                   /* Stop config if the user pushes the same button twice in a row. */
                   if(wc && bc->ButtType[wc]==bc->ButtType[wc-1] && bc->DeviceNum[wc]==bc->DeviceNum[wc-1] &&
-                   bc->ButtonNum[wc]==bc->ButtonNum[wc-1])   
+                   bc->ButtonNum[wc]==bc->ButtonNum[wc-1])
                     goto gornk;
 
                    bc->NumC++;
@@ -796,7 +839,7 @@ static BOOL CALLBACK DWBCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
 
                        /* Stop config if the user pushes the same button twice in a row. */
                        if(wc && bc->ButtType[wc]==bc->ButtType[wc-1] && bc->DeviceNum[wc]==bc->DeviceNum[wc-1] &&
-                        bc->ButtonNum[wc]==bc->ButtonNum[wc-1])   
+                        bc->ButtonNum[wc]==bc->ButtonNum[wc-1])
                         goto gornk;
 
                        bc->NumC++;
@@ -827,7 +870,7 @@ static BOOL CALLBACK DWBCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPa
                  {
                   case 200:
                            {
-                            ButtConfig *bc = DWBButtons;                
+                            ButtConfig *bc = DWBButtons;
                             char *nstr;
                             bc->NumC = 0;
                             nstr = MakeButtString(bc);
@@ -856,7 +899,7 @@ int DWaitButton(HWND hParent, const uint8 *text, ButtConfig *bc)
  die = CreateDialog(fceu_hInstance, "DWBDIALOG", hParent, DWBCallB);
 
  EnableWindow(hParent, 0);
- 
+
  ShowWindow(die, 1);
 
  while(die)
@@ -884,7 +927,7 @@ int DWaitButton(HWND hParent, const uint8 *text, ButtConfig *bc)
   }
   Sleep(10);
  }
- 
+
  EnableWindow(hParent, 1);
 }
 
@@ -954,28 +997,34 @@ static void DoTBConfig(HWND hParent, const char *text, char *template, ButtConfi
 
 static BOOL CALLBACK InputConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  static const char *strn[6]={"<none>","Gamepad","Zapper","Power Pad A","Power Pad B","Arkanoid Paddle"};
-  static const char *strf[13]=
+  static const char *strn[MAX_EXTENSIONS]={"<none>","Gamepad","Zapper","Power Pad A","Power Pad B","Arkanoid Paddle","Mouse"};
+  static const char *strf[14]=
   {"<none>","Arkanoid Paddle","Hyper Shot gun","4-Player Adapter",
-  "Family Keyboard","HyperShot Pads", "Mahjong", "Quiz King Buzzers",
+  "Family Keyboard","Subor Keyboard","HyperShot Pads", "Mahjong", "Quiz King Buzzers",
   "Family Trainer A","Family Trainer B", "Oeka Kids Tablet", "Barcode World",
   "Top Rider"};
-  static const int haven[6]={0,1,0,1,1,0};
-  static const int havef[13]={0,0,0,0, 1,0,0,1, 1,1,0,0, 0};
+  static const int haven[MAX_EXTENSIONS]={0,1,0,1,1,0,0};
+  static const int havef[14]={0,0,0,0, 1,1,0,0, 1,1,1,0, 0,0};
   int x;
-  
+
   switch(uMsg) {
-   case WM_INITDIALOG:                
-                for(x=0;x<2;x++)        
+   case WM_INITDIALOG:
+//                for(x=0;x<2;x++)
                 {
                  int y;
-
-                 for(y=0;y<6;y++)
-                  SendDlgItemMessage(hwndDlg,104+x,CB_ADDSTRING,0,(LPARAM)(LPSTR)strn[y]);
-
-                 SendDlgItemMessage(hwndDlg,104+x,CB_SETCURSEL,UsrInputType[x],(LPARAM)(LPSTR)0);
-                 EnableWindow(GetDlgItem(hwndDlg,106+x),haven[InputType[x]]);
-                 SetDlgItemText(hwndDlg,200+x,(LPTSTR)strn[InputType[x]]);
+                 for(y=0;y<MAX_EXTENSIONS-1;y++)
+                  SendDlgItemMessage(hwndDlg,104,CB_ADDSTRING,0,(LPARAM)(LPSTR)strn[y]);
+                 SendDlgItemMessage(hwndDlg,104,CB_SETCURSEL,UsrInputType[0],(LPARAM)(LPSTR)0);
+                 EnableWindow(GetDlgItem(hwndDlg,106),haven[InputType[0]]);
+                 SetDlgItemText(hwndDlg,200,(LPTSTR)strn[InputType[0]]);
+                }
+                {
+                 int y;
+                 for(y=0;y<MAX_EXTENSIONS;y++)
+                  SendDlgItemMessage(hwndDlg,105,CB_ADDSTRING,0,(LPARAM)(LPSTR)strn[y]);
+                 SendDlgItemMessage(hwndDlg,105,CB_SETCURSEL,UsrInputType[1],(LPARAM)(LPSTR)0);
+                 EnableWindow(GetDlgItem(hwndDlg,106),haven[InputType[1]]);
+                 SetDlgItemText(hwndDlg,201,(LPTSTR)strn[InputType[1]]);
                 }
 
 
@@ -983,11 +1032,11 @@ static BOOL CALLBACK InputConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                  int y;
                  for(y=0;y<13;y++)
                   SendDlgItemMessage(hwndDlg,110,CB_ADDSTRING,0,(LPARAM)(LPSTR)strf[y]);
-                 SendDlgItemMessage(hwndDlg,110,CB_SETCURSEL,UsrInputType[2],(LPARAM)(LPSTR)0);                
+                 SendDlgItemMessage(hwndDlg,110,CB_SETCURSEL,UsrInputType[2],(LPARAM)(LPSTR)0);
                  EnableWindow(GetDlgItem(hwndDlg,111),havef[InputType[2]]);
                  SetDlgItemText(hwndDlg,202,(LPTSTR)strf[InputType[2]]);
                 }
-                
+
                 break;
    case WM_CLOSE:
    case WM_QUIT: goto gornk;
@@ -1005,13 +1054,13 @@ static BOOL CALLBACK InputConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                            EnableWindow(GetDlgItem(hwndDlg,111),havef[InputType[2]]);
                            SetDlgItemText(hwndDlg,202,(LPTSTR)strf[InputType[2]]);
                            break;
-                           
+
                  }
 
                 }
                 if(!(wParam>>16))
                 switch(wParam&0xFFFF)
-                {                 
+                {
                  case 111:
                  {
                   const char *text = strf[InputType[2]];
@@ -1022,6 +1071,7 @@ static BOOL CALLBACK InputConCallB(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
                    case SIFC_FTRAINERA:
                    case SIFC_FTRAINERB:DoTBConfig(hwndDlg, text, "POWERPADDIALOG", FTrainerButtons, 12); break;
                    case SIFC_FKB:DoTBConfig(hwndDlg, text, "FKBDIALOG",fkbmap,0x48);break;
+                   case SIFC_SUBORKB:DoTBConfig(hwndDlg, text, "SUBORKBDIALOG",suborkbmap,0x60);break;
                    case SIFC_QUIZKING:DoTBConfig(hwndDlg, text, "QUIZKINGDIALOG",QuizKingButtons,6);break;
                   }
                  }

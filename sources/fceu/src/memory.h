@@ -18,8 +18,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*              Various macros for faster memory stuff 
-		(at least that's the idea) 
+/*        Various macros for faster memory stuff
+    (at least that's the idea)
 */
 
 #define FCEU_dwmemset(d,c,n) {int _x; for(_x=n-4;_x>=0;_x-=4) *(uint32 *)&(d)[_x]=c;}

@@ -19,11 +19,11 @@
  */
 
 /****************************************************************/
-/*			FCE Ultra				*/
-/*								*/
-/*	This file contains code for parsing command-line    	*/
-/*	options.						*/
-/*								*/
+/*                        FCE Ultra                                */
+/*                                                                */
+/*        This file contains code for parsing command-line            */
+/*        options.                                                */
+/*                                                                */
 /****************************************************************/
 
 #include <stdio.h>
@@ -45,7 +45,7 @@ void ParseEA(int x, int argc, char *argv[], ARGPSTRUCT *argsps)
     y++;
     continue;
    }
-   if(!strcmp(argv[x],argsps[y].name))	// A match.
+   if(!strcmp(argv[x],argsps[y].name))        // A match.
    {
     if(argsps[y].subs)
     {
@@ -63,22 +63,22 @@ void ParseEA(int x, int argc, char *argv[], ARGPSTRUCT *argsps)
      else
       switch(argsps[y].substype&(~0x4000))
       {
-       case 0:		// Integer
- 	      *(int *)argsps[y].subs=atoi(argv[x+1]);
-	      break;
-       case 2:		// Double float
-	      *(double *)argsps[y].subs=atof(argv[x+1]);
-	      break;
-       case 1:		// String
-	      if(argsps[y].substype&0x4000)
-	      {
+       case 0:                // Integer
+               *(int *)argsps[y].subs=atoi(argv[x+1]);
+              break;
+       case 2:                // Double float
+              *(double *)argsps[y].subs=atof(argv[x+1]);
+              break;
+       case 1:                // String
+              if(argsps[y].substype&0x4000)
+              {
                if(*(char **)argsps[y].subs)
-		free(*(char **)argsps[y].subs);
-	       if(!( *(char **)argsps[y].subs=(char*)malloc(strlen(argv[x+1])+1) ))
-		break;
-	      }	
-	      strcpy(*(char **)argsps[y].subs,argv[x+1]);
-	      break;
+                free(*(char **)argsps[y].subs);
+               if(!( *(char **)argsps[y].subs=(char*)malloc(strlen(argv[x+1])+1) ))
+                break;
+              }
+              strcpy(*(char **)argsps[y].subs,argv[x+1]);
+              break;
       }
     }
     if(argsps[y].var)

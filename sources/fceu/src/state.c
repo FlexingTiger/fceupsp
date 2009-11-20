@@ -51,7 +51,7 @@ static int StateShow;
 static SFORMAT SFMDATA[64];
 static int SFEXINDEX;
 
-#define RLSB 		FCEUSTATE_RLSB	//0x80000000
+#define RLSB     FCEUSTATE_RLSB  //0x80000000
 
 
 extern SFORMAT FCEUPPU_STATEINFO[];
@@ -85,7 +85,7 @@ static int SubWrite(FILE *st, SFORMAT *sf)
 
  while(sf->v)
  {
-  if(sf->s==~0)		/* Link to another struct.	*/
+  if(sf->s==~0)    /* Link to another struct.  */
   {
    uint32 tmp;
 
@@ -96,10 +96,10 @@ static int SubWrite(FILE *st, SFORMAT *sf)
    continue;
   }
 
-  acc+=8;			/* Description + size */
+  acc+=8;      /* Description + size */
   acc+=sf->s&(~RLSB);
 
-  if(st)			/* Are we writing or calculating the size of this block? */
+  if(st)      /* Are we writing or calculating the size of this block? */
   {
    fwrite(sf->desc,1,4,st);
    write32le(sf->s&(~RLSB),st);
@@ -108,15 +108,15 @@ static int SubWrite(FILE *st, SFORMAT *sf)
    if(sf->s&RLSB)
     FlipByteOrder(sf->v,sf->s&(~RLSB));
    #endif
- 
+
    fwrite((uint8 *)sf->v,1,sf->s&(~RLSB),st);
    /* Now restore the original byte order. */
    #ifndef LSB_FIRST
-   if(sf->s&RLSB)   
+   if(sf->s&RLSB)
     FlipByteOrder(sf->v,sf->s&(~RLSB));
    #endif
   }
-  sf++; 
+  sf++;
  }
 
  return(acc);
@@ -127,9 +127,9 @@ static int WriteStateChunk(FILE *st, int type, SFORMAT *sf)
  int bsize;
 
  fputc(type,st);
- 
+
  bsize=SubWrite(0,sf);
- write32le(bsize,st);		
+ write32le(bsize,st);
 
  if(!SubWrite(st,sf)) return(0);
  return (bsize+5);
@@ -139,7 +139,7 @@ static SFORMAT *CheckS(SFORMAT *sf, uint32 tsize, char *desc)
 {
  while(sf->v)
  {
-  if(sf->s==~0)		/* Link to another SFORMAT structure. */
+  if(sf->s==~0)    /* Link to another SFORMAT structure. */
   {
    SFORMAT *tmp;
    if((tmp= CheckS((SFORMAT *)sf->v, tsize, desc) ))
@@ -205,16 +205,16 @@ static int ReadStateChunks(FILE *st, int32 totalsize)
   {
    case 1:if(!ReadStateChunk(st,SFCPU,size)) ret=0;break;
    case 2:if(!ReadStateChunk(st,SFCPUC,size)) ret=0;
-          else
-	  {
-	   X.mooPI=X.P;	// Quick and dirty hack.
-	  }
-	  break;
+    else
+    {
+     X.mooPI=X.P;  // Quick and dirty hack.
+    }
+    break;
    case 3:if(!ReadStateChunk(st,FCEUPPU_STATEINFO,size)) ret=0;break;
    case 4:if(!ReadStateChunk(st,FCEUCTRL_STATEINFO,size)) ret=0;break;
    case 5:if(!ReadStateChunk(st,FCEUSND_STATEINFO,size)) ret=0;break;
    case 0x10:if(!ReadStateChunk(st,SFMDATA,size)) ret=0;
-	     break;
+       break;
    default: if(fseek(st,size,SEEK_CUR)<0) goto endo;break;
   }
  }
@@ -228,152 +228,152 @@ extern int geniestage;
 
 int FCEUSS_SaveFP(FILE *st)
 {
-        static uint32 totalsize;
-        static uint8 header[16]="FCS";
-        
-        memset(header+4,0,13);
-        header[3]=0xFF;
-	FCEU_en32lsb(header + 8, FCEU_VERSION_NUMERIC);
-        fwrite(header,1,16,st);       
-        FCEUPPU_SaveState();
-        FCEUSND_SaveState();
-        totalsize=WriteStateChunk(st,1,SFCPU);
-        totalsize+=WriteStateChunk(st,2,SFCPUC);
-        totalsize+=WriteStateChunk(st,3,FCEUPPU_STATEINFO);
-        totalsize+=WriteStateChunk(st,4,FCEUCTRL_STATEINFO);
-        totalsize+=WriteStateChunk(st,5,FCEUSND_STATEINFO);
-	if(SPreSave) SPreSave();
-        totalsize+=WriteStateChunk(st,0x10,SFMDATA);
-	if(SPreSave) SPostSave();
+  static uint32 totalsize;
+  static uint8 header[16]="FCS";
 
-        fseek(st,4,SEEK_SET);
-        write32le(totalsize,st);
-	return(1);
+  memset(header+4,0,13);
+  header[3]=0xFF;
+  FCEU_en32lsb(header + 8, FCEU_VERSION_NUMERIC);
+  fwrite(header,1,16,st);
+  FCEUPPU_SaveState();
+  FCEUSND_SaveState();
+  totalsize=WriteStateChunk(st,1,SFCPU);
+  totalsize+=WriteStateChunk(st,2,SFCPUC);
+  totalsize+=WriteStateChunk(st,3,FCEUPPU_STATEINFO);
+  totalsize+=WriteStateChunk(st,4,FCEUCTRL_STATEINFO);
+  totalsize+=WriteStateChunk(st,5,FCEUSND_STATEINFO);
+  if(SPreSave) SPreSave();
+  totalsize+=WriteStateChunk(st,0x10,SFMDATA);
+  if(SPreSave) SPostSave();
+
+  fseek(st,4,SEEK_SET);
+  write32le(totalsize,st);
+  return(1);
 }
 
 void FCEUSS_Save(char *fname)
 {
-	FILE *st=NULL;
-	char *fn;
+  FILE *st=NULL;
+  char *fn;
 
-	if(geniestage==1)
-	{
-	 FCEU_DispMessage("Cannot save FCS in GG screen.");
-	 return;
-        }
+  if(geniestage==1)
+  {
+   FCEU_DispMessage("Cannot save FCS in GG screen.");
+   return;
+  }
 
-	if(fname)
-	 st=FCEUD_UTF8fopen(fname, "wb");
-	else
-	{
-         st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
-	 free(fn);
-	}
+  if(fname)
+   st=FCEUD_UTF8fopen(fname, "wb");
+  else
+  {
+   st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,0),"wb");
+   free(fn);
+  }
 
-	if(st == NULL)
-	{
-         FCEU_DispMessage("State %d save error.",CurrentState);
-	 return;
-	}
+  if(st == NULL)
+  {
+   FCEU_DispMessage("State %d save error.",CurrentState);
+   return;
+  }
 
-	FCEUSS_SaveFP(st);
+  FCEUSS_SaveFP(st);
 
-	SaveStateStatus[CurrentState]=1;
-	fclose(st);
-	FCEU_DispMessage("State %d saved.",CurrentState);
+  SaveStateStatus[CurrentState]=1;
+  fclose(st);
+  FCEU_DispMessage("State %d saved.",CurrentState);
 }
 
 int FCEUSS_LoadFP(FILE *st)
 {
-	int x;
-        uint8 header[16];
-	int stateversion;
+  int x;
+  uint8 header[16];
+  int stateversion;
 
-        fread(&header,1,16,st);
-        if(memcmp(header,"FCS",3))
-         return(0);
+  fread(&header,1,16,st);
+  if(memcmp(header,"FCS",3))
+   return(0);
 
-	if(header[3] == 0xFF)
-	 stateversion = FCEU_de32lsb(header + 8);
-        else
-         stateversion=header[3] * 100;
+  if(header[3] == 0xFF)
+   stateversion = FCEU_de32lsb(header + 8);
+  else
+   stateversion=header[3] * 100;
 
-        x=ReadStateChunks(st,*(uint32*)(header+4));
-        if(stateversion<9500) X.IRQlow=0;
-          
-        if(GameStateRestore) GameStateRestore(stateversion);
-        if(x)
-        {
-         FCEUPPU_LoadState(stateversion);
-         FCEUSND_LoadState(stateversion);  
-        }
-	return(x);
+  x=ReadStateChunks(st,*(uint32*)(header+4));
+  if(stateversion<9500) X.IRQlow=0;
+
+  if(GameStateRestore) GameStateRestore(stateversion);
+  if(x)
+  {
+   FCEUPPU_LoadState(stateversion);
+   FCEUSND_LoadState(stateversion);
+  }
+  return(x);
 }
 
 int FCEUSS_Load(char *fname)
 {
-	FILE *st;
-	char *fn;
+  FILE *st;
+  char *fn;
 
-        if(geniestage==1)
-        {
-         FCEU_DispMessage("Cannot load FCS in GG screen.");
-         return(0);
-        }
+  if(geniestage==1)
+  {
+   FCEU_DispMessage("Cannot load FCS in GG screen.");
+   return(0);
+  }
 
-        if(fname)
-         st=FCEUD_UTF8fopen(fname, "rb");
-        else
-        {
-         st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
-	 free(fn);
-	}
+  if(fname)
+   st=FCEUD_UTF8fopen(fname, "rb");
+  else
+  {
+   st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,CurrentState,fname),"rb");
+   free(fn);
+  }
 
-	if(st == NULL)
-	{
-         FCEU_DispMessage("State %d load error.",CurrentState);
-         SaveStateStatus[CurrentState]=0;
-	 return(0);
-	}
+  if(st == NULL)
+  {
+   FCEU_DispMessage("State %d load error.",CurrentState);
+   SaveStateStatus[CurrentState]=0;
+   return(0);
+  }
 
-	if(FCEUSS_LoadFP(st))
-	{
-         SaveStateStatus[CurrentState]=1;
-         FCEU_DispMessage("State %d loaded.",CurrentState);
-         SaveStateStatus[CurrentState]=1;
-	 fclose(st);
-         return(1);
-        }   
-        else
-        {
-         SaveStateStatus[CurrentState]=1;
-         FCEU_DispMessage("Error(s) reading state %d!",CurrentState);
-	 fclose(st);
-         return(0);
-        }
+  if(FCEUSS_LoadFP(st))
+  {
+   SaveStateStatus[CurrentState]=1;
+   FCEU_DispMessage("State %d loaded.",CurrentState);
+   SaveStateStatus[CurrentState]=1;
+   fclose(st);
+   return(1);
+  }
+  else
+  {
+   SaveStateStatus[CurrentState]=1;
+   FCEU_DispMessage("Error(s) reading state %d!",CurrentState);
+   fclose(st);
+   return(0);
+  }
 }
 
 void FCEUSS_CheckStates(void)
 {
-        FILE *st=NULL;
-        char *fn;
-        int ssel;
+  FILE *st=NULL;
+  char *fn;
+  int ssel;
 
-        for(ssel=0;ssel<10;ssel++)
-        {
-         st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
-         free(fn);
-         if(st)
-         {
-          SaveStateStatus[ssel]=1;
-          fclose(st);
-         }
-         else
-          SaveStateStatus[ssel]=0;
-        }
+  for(ssel=0;ssel<10;ssel++)
+  {
+   st=FCEUD_UTF8fopen(fn=FCEU_MakeFName(FCEUMKF_STATE,ssel,0),"rb");
+   free(fn);
+   if(st)
+   {
+    SaveStateStatus[ssel]=1;
+    fclose(st);
+   }
+   else
+    SaveStateStatus[ssel]=0;
+  }
 
-	CurrentState=0;
-	StateShow=0;
+  CurrentState=0;
+  StateShow=0;
 }
 
 void ResetExState(void (*PreSave)(void), void (*PostSave)(void))
@@ -402,7 +402,7 @@ void AddExState(void *v, uint32 s, int type, char *desc)
  SFMDATA[SFEXINDEX].s=s;
  if(type) SFMDATA[SFEXINDEX].s|=RLSB;
  if(SFEXINDEX<63) SFEXINDEX++;
- SFMDATA[SFEXINDEX].v=0;		// End marker.
+ SFMDATA[SFEXINDEX].v=0;    // End marker.
 }
 
 void FCEUI_SelectState(int w)
@@ -413,7 +413,7 @@ void FCEUI_SelectState(int w)
  CurrentState=w;
  StateShow=180;
  FCEU_DispMessage("-select state-");
-}  
+}
 
 void FCEUI_SaveState(char *fname)
 {
@@ -443,7 +443,7 @@ void FCEUI_LoadState(char *fname)
     if(FCEUSS_SaveFP(fp))
     {
      fclose(fp);
-     FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn);    
+     FCEUNET_SendFile(FCEUNPCMD_LOADSTATE, fn);
     }
     else fclose(fp);
     unlink(fn);

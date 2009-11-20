@@ -19,11 +19,11 @@
  */
 
 /****************************************************************/
-/*			FCE Ultra				*/
-/*								*/
-/*	This file contains code to interface to the standard    */
-/*	FCE Ultra configuration file saving/loading code.	*/
-/*								*/
+/*                        FCE Ultra                                */
+/*                                                                */
+/*        This file contains code to interface to the standard    */
+/*        FCE Ultra configuration file saving/loading code.        */
+/*                                                                */
 /****************************************************************/
 
 static CFGSTRUCT fceuconfig[]={
@@ -53,10 +53,10 @@ static CFGSTRUCT fceuconfig[]={
         AC(ntsccol),AC(ntsctint),AC(ntschue),
 
         NAC("palyo",palyo),
-	NAC("genie",genie),
-	NAC("fs",fullscreen),
-	NAC("vgamode",vmod),
-	NAC("sound",soundo),
+        NAC("genie",genie),
+        NAC("fs",fullscreen),
+        NAC("vgamode",vmod),
+        NAC("sound",soundo),
 
         ACS(gfsdir),
 
@@ -73,24 +73,24 @@ static CFGSTRUCT fceuconfig[]={
         NAC("saspectw987",saspectw),
         NAC("saspecth987",saspecth),
 
-	AC(soundrate),
+        AC(soundrate),
         AC(soundbuftime),
-	AC(soundoptions),
-	AC(soundquality),
+        AC(soundoptions),
+        AC(soundquality),
         AC(soundvolume),
 
         AC(goptions),
-	NAC("eoptions",eoptions),
+        NAC("eoptions",eoptions),
         NACA("cpalette",cpalette),
 
         NACA("InputType",UsrInputType),
 
-	NAC("vmcx",vmodes[0].x),
-	NAC("vmcy",vmodes[0].y),
-	NAC("vmcb",vmodes[0].bpp),
-	NAC("vmcf",vmodes[0].flags),
-	NAC("vmcxs",vmodes[0].xscale),
-	NAC("vmcys",vmodes[0].yscale),
+        NAC("vmcx",vmodes[0].x),
+        NAC("vmcy",vmodes[0].y),
+        NAC("vmcb",vmodes[0].bpp),
+        NAC("vmcf",vmodes[0].flags),
+        NAC("vmcxs",vmodes[0].xscale),
+        NAC("vmcys",vmodes[0].yscale),
         NAC("vmspecial",vmodes[0].special),
 
         NAC("srendline",srendlinen),
@@ -99,7 +99,7 @@ static CFGSTRUCT fceuconfig[]={
         NAC("erendlinep",erendlinep),
 
         AC(disvaccel),
-	AC(winsync),
+        AC(winsync),
         NAC("988fssync",fssync),
 
         AC(ismaximized),
@@ -118,8 +118,8 @@ static void SaveConfig(char *filename)
 
 static void LoadConfig(char *filename)
 {
-	FCEUI_GetNTSCTH(&ntsctint,&ntschue);
+        FCEUI_GetNTSCTH(&ntsctint,&ntschue);
         LoadFCEUConfig(filename,fceuconfig);
-	FCEUI_SetNTSCTH(ntsccol,ntsctint,ntschue);
+        FCEUI_SetNTSCTH(ntsccol,ntsctint,ntschue);
 }
 
